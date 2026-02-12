@@ -109,6 +109,47 @@ body.register-fullpage {
     color: var(--color-surface);
 }
 
+.header-dropdown {
+    position: relative;
+}
+
+.header-dropdown-trigger {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.header-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    min-width: 180px;
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0;
+    display: none;
+    z-index: 100;
+}
+
+.header-dropdown.is-open .header-dropdown-menu {
+    display: block;
+}
+
+.header-dropdown-menu a {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.9375rem;
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.header-dropdown-menu a:hover {
+    background: var(--color-bg);
+    color: var(--color-primary);
+}
+
 .site-main {
     flex: 1;
     max-width: 1200px;

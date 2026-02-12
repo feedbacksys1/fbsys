@@ -20,8 +20,20 @@
             </nav>
             <a href="{% url 'landing' %}" class="logo">Система обратной связи</a>
             <div class="header-nav header-nav-right">
+                {% if user.is_authenticated %}
+                <div class="header-dropdown">
+                    <button type="button" class="btn btn-header header-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="user-menu-btn">
+                        {{ user.get_username }}
+                    </button>
+                    <div class="header-dropdown-menu" aria-labelledby="user-menu-btn">
+                        <a href="#">Личный кабинет</a>
+                        <a href="{% url 'site_logout' %}">Выход</a>
+                    </div>
+                </div>
+                {% else %}
                 <a href="{% url 'site_login' %}" class="btn btn-header">Войти</a>
                 <a href="{% url 'site_register' %}" class="btn btn-header btn-header-primary">Регистрация</a>
+                {% endif %}
             </div>
         </div>
     </header>
@@ -33,5 +45,19 @@
             <p>Московский университет имени М.Ю. Витте</p>
         </div>
     </footer>
+    <script>
+        (function() {
+            var btn = document.getElementById('user-menu-btn');
+            var dropdown = btn && btn.closest('.header-dropdown');
+            if (!dropdown) return;
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                dropdown.classList.toggle('is-open');
+            });
+            document.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target)) dropdown.classList.remove('is-open');
+            });
+        })();
+    </script>
 </body>
 </html>

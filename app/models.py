@@ -41,6 +41,44 @@ class FeedbackStatus(models.TextChoices):
     REVIEWED = 'reviewed', 'Рассмотрен'
 
 
+class StudentRequest(models.Model):
+    """
+    Заявка от студента преподавателю.
+    """
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='sent_requests',
+        verbose_name='Отправитель',
+    )
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='received_requests',
+        verbose_name='Преподаватель (получатель)',
+    )
+    created_at = models.DateTimeField('Дата отправки', auto_now_add=True)
+    status = models.CharField(
+        'Статус',
+        max_length=20,
+        choices=FeedbackStatus.choices,
+        default=FeedbackStatus.NEW,
+    )
+    status_changed_at = models.DateTimeField(
+        'Дата изменения статуса',
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = 'заявка студента'
+        verbose_name_plural = 'заявки студентов'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.sender.get_username()} → {self.recipient.get_username()} ({self.get_status_display()})'
+
+
 class GeneralFeedback(models.Model):
     name = models.CharField('Имя', max_length=150)
     email = models.EmailField('Почта')

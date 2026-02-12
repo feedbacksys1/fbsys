@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
 
-from .models import Profile, GeneralFeedback
+from .models import Profile, GeneralFeedback, StudentRequest
 
 User = get_user_model()
 
@@ -36,3 +36,11 @@ class GeneralFeedbackAdmin(admin.ModelAdmin):
     list_display = ('email', 'name', 'topic', 'status', 'created_at', 'status_changed_at', 'status_changed_by')
     list_filter = ('status',)
     search_fields = ('name', 'email', 'message', 'topic')
+
+
+@admin.register(StudentRequest)
+class StudentRequestAdmin(admin.ModelAdmin):
+    list_display = ('sender', 'recipient', 'status', 'created_at', 'status_changed_at')
+    list_filter = ('status',)
+    search_fields = ('sender__username', 'sender__email', 'recipient__username', 'recipient__email')
+    raw_id_fields = ('sender', 'recipient')

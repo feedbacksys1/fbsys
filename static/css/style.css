@@ -323,6 +323,52 @@ body {
     color: var(--color-surface);
 }
 
+.contacts-page {
+    max-width: 900px;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+}
+
+.contacts-info {
+    margin-bottom: 2rem;
+}
+
+.contact-item {
+    font-size: 1rem;
+    color: var(--color-text);
+    margin-bottom: 0.75rem;
+}
+
+.contact-label {
+    font-weight: 600;
+    margin-right: 0.5rem;
+}
+
+.contacts-info a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.contacts-info a:hover {
+    text-decoration: underline;
+}
+
+.contacts-map {
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+}
+
+.contacts-map .google-map {
+    display: block;
+    min-height: 700px;
+    border: 0;
+}
+
 @media (max-width: 900px) {
     .steps-cta-inner {
         grid-template-columns: 1fr;

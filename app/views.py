@@ -30,6 +30,13 @@ def contacts(request):
     return render(request, 'contacts.html')
 
 
+def faq(request):
+    """
+    Статичная страница «Вопросы и ответы».
+    """
+    return render(request, 'faq.html')
+
+
 def feedback(request):
     """
     Страница обратной связи (общая форма для пользователей сайта).

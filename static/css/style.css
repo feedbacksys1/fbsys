@@ -36,6 +36,9 @@ body.register-fullpage {
 }
 
 .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background: var(--color-primary);
     color: var(--color-surface);
     box-shadow: var(--shadow);
@@ -856,6 +859,48 @@ body.register-fullpage {
     width: 100%;
     height: 100%;
     border: 0;
+}
+
+/* Страница FAQ */
+.faq-page {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-header {
+    margin-bottom: 2rem;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.faq-item {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-question {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.faq-answer {
+    font-size: 1rem;
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+.faq-answer p {
+    margin: 0;
 }
 
 .feedback-page {

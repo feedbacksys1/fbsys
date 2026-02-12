@@ -1003,6 +1003,37 @@ body.register-fullpage {
     margin-bottom: 0;
 }
 
+.cabinet-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.cabinet-request-card {
+    margin-top: 1.5rem;
+}
+
+.cabinet-request-form .form-row {
+    margin-bottom: 1.25rem;
+}
+
+.cabinet-request-form .form-row:last-of-type {
+    margin-bottom: 0;
+}
+
+.cabinet-request-form .form-actions {
+    margin-top: 1.25rem;
+}
+
+select.form-input,
+select.form-select {
+    cursor: pointer;
+    appearance: auto;
+}
+
 .settings-page {
     max-width: 900px;
     margin: 0 auto;

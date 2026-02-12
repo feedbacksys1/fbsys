@@ -16,6 +16,34 @@
             <p class="page-lead">Здесь отображаются ваши заявки и учётная информация. Раздел будет дополняться.</p>
             {% endif %}
         </section>
+        {% if role == 'student' %}
+        <section class="cabinet-card cabinet-request-card">
+            <h2 class="cabinet-card-title">Заявка преподавателю</h2>
+            <form class="cabinet-request-form" method="post" action="#">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label class="form-label" for="id_recipient">Преподаватель</label>
+                    <select id="id_recipient" name="recipient" class="form-input form-select" required>
+                        <option value="">Выберите преподавателя</option>
+                        <option value="1">Иванов И.И.</option>
+                        <option value="2">Петрова М.С.</option>
+                        <option value="3">Сидоров А.В.</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="id_topic">Тема</label>
+                    <input type="text" id="id_topic" name="topic" class="form-input" maxlength="200" placeholder="Кратко укажите тему обращения" required>
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="id_message">Сообщение</label>
+                    <textarea id="id_message" name="message" class="form-input form-textarea" rows="5" placeholder="Текст заявки" required></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Отправить заявку</button>
+                </div>
+            </form>
+        </section>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

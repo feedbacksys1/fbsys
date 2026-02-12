@@ -324,49 +324,120 @@ body {
 }
 
 .contacts-page {
-    max-width: 900px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.page-title {
-    font-size: 1.75rem;
-    color: var(--color-primary);
-    margin-bottom: 1.5rem;
-}
-
-.contacts-info {
+.contacts-header {
     margin-bottom: 2rem;
 }
 
-.contact-item {
+.page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.page-lead {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+}
+
+.contacts-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.contacts-card {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+}
+
+.contacts-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.contacts-list {
+    margin: 0;
+}
+
+.contacts-list-item {
+    margin-bottom: 1.25rem;
+}
+
+.contacts-list-item:last-child {
+    margin-bottom: 0;
+}
+
+.contacts-list-item dt {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.contacts-list-item dd {
+    margin: 0;
     font-size: 1rem;
     color: var(--color-text);
-    margin-bottom: 0.75rem;
+    line-height: 1.4;
 }
 
-.contact-label {
-    font-weight: 600;
-    margin-right: 0.5rem;
-}
-
-.contacts-info a {
+.contacts-list-item a {
     color: var(--color-primary);
     text-decoration: none;
 }
 
-.contacts-info a:hover {
+.contacts-list-item a:hover {
     text-decoration: underline;
 }
 
+.contacts-map-wrap {
+    height: 480px;
+}
+
 .contacts-map {
+    position: relative;
+    width: 100%;
+    height: 100%;
     border-radius: var(--radius);
     overflow: hidden;
+    box-shadow: var(--shadow);
     border: 1px solid var(--color-border);
+    background: var(--color-border);
 }
 
 .contacts-map .google-map {
-    display: block;
-    min-height: 700px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border: 0;
+}
+
+@media (max-width: 900px) {
+    .contacts-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .contacts-map-wrap {
+        height: 360px;
+    }
 }
 
 @media (max-width: 900px) {

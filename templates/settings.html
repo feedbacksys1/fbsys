@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Настройки{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    <h1 class="page-title">Настройки</h1>
+    <div class="settings-cards">
+        <section class="settings-card">
+            <h2 class="settings-card-title">Данные аккаунта</h2>
+            <form method="post" action="{% url 'settings' %}" class="settings-form">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label class="form-label" for="id_first_name">Имя</label>
+                    {{ profile_form.first_name }}
+                    {% if profile_form.first_name.errors %}
+                    <ul class="form-errors">{% for e in profile_form.first_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="id_last_name">Фамилия</label>
+                    {{ profile_form.last_name }}
+                    {% if profile_form.last_name.errors %}
+                    <ul class="form-errors">{% for e in profile_form.last_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="id_email">Email</label>
+                    {{ profile_form.email }}
+                    {% if profile_form.email.errors %}
+                    <ul class="form-errors">{% for e in profile_form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="id_username">Логин</label>
+                    {{ profile_form.username }}
+                    {% if profile_form.username.errors %}
+                    <ul class="form-errors">{% for e in profile_form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="id_student_number">Номер студента</label>
+                    {{ profile_form.student_number }}
+                    {% if profile_form.student_number.errors %}
+                    <ul class="form-errors">{% for e in profile_form.student_number.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-actions">
+                    <button type="submit" name="profile_submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </section>
+        <section class="settings-card">
+            <h2 class="settings-card-title">Изменить пароль</h2>
+            <form method="post" action="{% url 'settings' %}" class="settings-form">
+                {% csrf_token %}
+                <div class="form-row">
+                    <label class="form-label" for="id_old_password">Текущий пароль</label>
+                    {{ password_form.old_password }}
+                    {% if password_form.old_password.errors %}
+                    <ul class="form-errors">{% for e in password_form.old_password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="id_new_password1">Новый пароль</label>
+                    {{ password_form.new_password1 }}
+                    {% if password_form.new_password1.errors %}
+                    <ul class="form-errors">{% for e in password_form.new_password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                <div class="form-row">
+                    <label class="form-label" for="id_new_password2">Повторите новый пароль</label>
+                    {{ password_form.new_password2 }}
+                    {% if password_form.new_password2.errors %}
+                    <ul class="form-errors">{% for e in password_form.new_password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                    {% endif %}
+                </div>
+                {% if password_form.non_field_errors %}
+                <ul class="form-errors form-errors-general">
+                    {% for e in password_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}
+                </ul>
+                {% endif %}
+                <div class="form-actions">
+                    <button type="submit" name="password_submit" class="btn btn-primary">Изменить пароль</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+{% endblock %}

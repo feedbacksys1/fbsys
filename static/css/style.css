@@ -932,6 +932,59 @@ body.register-fullpage {
     margin-bottom: 1rem;
 }
 
+/* Страница настроек */
+.settings-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.settings-page .page-title {
+    margin-bottom: 1.5rem;
+}
+
+.settings-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.settings-card {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+}
+
+.settings-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.settings-form .form-row {
+    margin-bottom: 1.25rem;
+}
+
+.settings-form .form-row:last-of-type {
+    margin-bottom: 0;
+}
+
+.settings-form .form-actions {
+    margin-top: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .settings-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
 .form-actions .btn {
     min-width: 140px;
 }

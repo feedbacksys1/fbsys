@@ -2,12 +2,58 @@
 Формы приложения app.
 """
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import get_user_model
 
 from .models import Profile, Role
 
 User = get_user_model()
+
+
+class ProfileSettingsForm(forms.Form):
+    first_name = forms.CharField(
+        max_length=150,
+        required=True,
+        label='Имя',
+        widget=forms.TextInput(attrs={'class': 'form-input', 'autocomplete': 'given-name'}),
+    )
+    last_name = forms.CharField(
+        max_length=150,
+        required=True,
+        label='Фамилия',
+        widget=forms.TextInput(attrs={'class': 'form-input', 'autocomplete': 'family-name'}),
+    )
+    email = forms.EmailField(
+        required=True,
+        label='Email',
+        widget=forms.EmailInput(attrs={'class': 'form-input', 'autocomplete': 'email'}),
+    )
+    username = forms.CharField(
+        max_length=150,
+        label='Логин',
+        widget=forms.TextInput(attrs={'class': 'form-input', 'autocomplete': 'username'}),
+    )
+    student_number = forms.CharField(
+        max_length=50,
+        required=False,
+        label='Номер студента',
+        widget=forms.TextInput(attrs={'class': 'form-input'}),
+    )
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username', '').strip()
+        if not username:
+            return username
+        qs = User.objects.filter(username=username)
+        if self.user:
+            qs = qs.exclude(pk=self.user.pk)
+        if qs.exists():
+            raise forms.ValidationError('Пользователь с таким логином уже существует.')
+        return username
 
 
 class RegistrationForm(UserCreationForm):
@@ -98,6 +144,34 @@ class RegistrationForm(UserCreationForm):
                 student_number=student_number,
             )
         return user
+
+
+class PasswordChangeFormStyled(PasswordChangeForm):
+    old_password = forms.CharField(
+        label='Текущий пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'autocomplete': 'current-password',
+        }),
+    )
+    new_password1 = forms.CharField(
+        label='Новый пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'autocomplete': 'new-password',
+        }),
+    )
+    new_password2 = forms.CharField(
+        label='Повторите новый пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-input',
+            'autocomplete': 'new-password',
+        }),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password1'].help_text = None
 
 
 class LoginForm(AuthenticationForm):

@@ -2,7 +2,7 @@
 Представления основного приложения.
 """
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from django.contrib import messages
 
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm, ProfileSettingsForm, PasswordChangeFormStyled
 from .models import Profile, Role, GeneralFeedback, FeedbackStatus
 
 User = get_user_model()
@@ -111,6 +111,54 @@ def logout_view(request):
     """
     logout(request)
     return redirect('landing')
+
+
+@login_required
+def settings_view(request):
+    """
+    Настройки аккаунта: данные профиля и смена пароля.
+    """
+    user = request.user
+    try:
+        profile = user.profile
+    except Profile.DoesNotExist:
+        profile = None
+    profile_form = ProfileSettingsForm(
+        request.POST if request.method == 'POST' and 'profile_submit' in request.POST else None,
+        user=user,
+        initial={
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email or '',
+            'username': user.username,
+            'student_number': profile.student_number if profile else '',
+        },
+    )
+    password_form = PasswordChangeFormStyled(
+        user,
+        request.POST if request.method == 'POST' and 'password_submit' in request.POST else None,
+    )
+    if request.method == 'POST':
+        if 'profile_submit' in request.POST and profile_form.is_valid():
+            user.first_name = profile_form.cleaned_data['first_name']
+            user.last_name = profile_form.cleaned_data['last_name']
+            user.email = profile_form.cleaned_data['email']
+            user.username = profile_form.cleaned_data['username']
+            user.save()
+            prof, _ = Profile.objects.get_or_create(user=user, defaults={'role': Role.STUDENT})
+            prof.student_number = profile_form.cleaned_data.get('student_number', '')
+            prof.save()
+            messages.success(request, 'Данные аккаунта сохранены.')
+            return redirect('settings')
+        if 'password_submit' in request.POST and password_form.is_valid():
+            password_form.save()
+            update_session_auth_hash(request, password_form.user)
+            messages.success(request, 'Пароль успешно изменён.')
+            return redirect('settings')
+    return render(request, 'settings.html', {
+        'profile_form': profile_form,
+        'password_form': password_form,
+    })
 
 
 def _is_staff(user):

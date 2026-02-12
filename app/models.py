@@ -57,6 +57,8 @@ class StudentRequest(models.Model):
         related_name='received_requests',
         verbose_name='Преподаватель (получатель)',
     )
+    topic = models.CharField('Тема', max_length=200, blank=True)
+    message = models.TextField('Сообщение')
     created_at = models.DateTimeField('Дата отправки', auto_now_add=True)
     status = models.CharField(
         'Статус',
@@ -76,7 +78,8 @@ class StudentRequest(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f'{self.sender.get_username()} → {self.recipient.get_username()} ({self.get_status_display()})'
+        topic_preview = (self.topic or self.message)[:50]
+        return f'{self.sender.get_username()} → {self.recipient.get_username()}: {topic_preview}'
 
 
 class GeneralFeedback(models.Model):

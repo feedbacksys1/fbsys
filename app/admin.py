@@ -40,7 +40,7 @@ class GeneralFeedbackAdmin(admin.ModelAdmin):
 
 @admin.register(StudentRequest)
 class StudentRequestAdmin(admin.ModelAdmin):
-    list_display = ('sender', 'recipient', 'status', 'created_at', 'status_changed_at')
+    list_display = ('sender', 'recipient', 'topic', 'status', 'created_at', 'status_changed_at')
     list_filter = ('status',)
-    search_fields = ('sender__username', 'sender__email', 'recipient__username', 'recipient__email')
+    search_fields = ('sender__username', 'sender__email', 'recipient__username', 'recipient__email', 'topic', 'message')
     raw_id_fields = ('sender', 'recipient')

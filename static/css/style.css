@@ -13,7 +13,7 @@
     --color-text: #2d3748;
     --color-text-muted: #718096;
     --color-border: #e2e8f0;
-    --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --radius: 8px;
@@ -102,12 +102,16 @@ body {
 .hero {
     background: var(--color-primary);
     color: var(--color-surface);
-    padding: 3rem 1.5rem 4rem;
+    padding: 4rem 1.5rem 6rem;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
 }
 
 .hero-inner {
     max-width: 1200px;
     margin: 0 auto;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -115,24 +119,25 @@ body {
 }
 
 .hero-text h1 {
-    font-size: 2.25rem;
+    font-size: 2.75rem;
     font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 1rem;
+    line-height: 1.25;
+    margin-bottom: 1.25rem;
     color: var(--color-surface);
 }
 
 .hero-subtitle {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     color: rgba(255, 255, 255, 0.9);
     max-width: 520px;
+    line-height: 1.5;
 }
 
 .hero-icon {
     flex-shrink: 0;
-    width: 160px;
-    height: 160px;
-    color: rgba(255, 255, 255, 0.9);
+    width: 200px;
+    height: 200px;
+    color: rgba(255, 255, 255, 0.95);
 }
 
 .hero-icon svg {
@@ -142,7 +147,7 @@ body {
 
 .about {
     background: var(--color-surface);
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
 }
 
 .about-inner {
@@ -154,41 +159,42 @@ body {
 .about h2 {
     font-size: 1.75rem;
     color: var(--color-primary);
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
-.about-lead {
-    font-size: 1.0625rem;
+.about-lead,
+.about-text {
+    font-size: 1rem;
     color: var(--color-text-muted);
-    margin-bottom: 2rem;
-    line-height: 1.65;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.about-text:last-of-type {
+    margin-bottom: 1.75rem;
 }
 
 .advantages {
     list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
 }
 
 .advantages li {
-    font-size: 1rem;
+    background: var(--color-bg);
+    border-left: 4px solid var(--color-accent);
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 0.9375rem;
     color: var(--color-text);
-    font-weight: 500;
-    position: relative;
-    padding-left: 1.5rem;
 }
 
-.advantages li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.5em;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-accent);
+.advantage-title {
+    font-weight: 600;
+    display: block;
 }
 
 .steps-cta-wrap {
@@ -214,6 +220,18 @@ body {
 .steps-list {
     list-style: none;
     counter-reset: step;
+    position: relative;
+    padding-left: 0;
+}
+
+.steps-list::before {
+    content: "";
+    position: absolute;
+    left: 0.875rem;
+    top: 1.5rem;
+    bottom: 1.5rem;
+    width: 2px;
+    background: var(--color-border);
 }
 
 .steps-list li {
@@ -222,18 +240,13 @@ body {
     color: var(--color-text);
     padding: 0.75rem 0 0.75rem 3rem;
     position: relative;
-    border-left: 2px solid var(--color-border);
-    margin-left: 0.75rem;
-}
-
-.steps-list li:last-child {
-    border-left-color: transparent;
+    margin-left: 0;
 }
 
 .steps-list li::before {
     content: counter(step);
     position: absolute;
-    left: -0.75rem;
+    left: 0.875rem;
     top: 0.65rem;
     transform: translateX(-50%);
     width: 1.75rem;
@@ -325,7 +338,7 @@ body {
     }
 
     .hero-text h1 {
-        font-size: 1.75rem;
+        font-size: 1.875rem;
     }
 
     .hero-subtitle {
@@ -333,8 +346,15 @@ body {
     }
 
     .hero-icon {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero {
+        min-height: auto;
+        padding: 3rem 1rem 4rem;
     }
 }
 
@@ -346,7 +366,6 @@ body {
     }
 
     .advantages {
-        flex-direction: column;
-        align-items: center;
+        grid-template-columns: 1fr;
     }
 }

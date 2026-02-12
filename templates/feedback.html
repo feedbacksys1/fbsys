@@ -9,7 +9,8 @@
         <p class="page-lead">Оставьте сообщение — мы рассмотрим его и ответим при необходимости.</p>
     </header>
     <div class="feedback-form-wrap">
-            <form class="feedback-form" method="post" action="#">
+            <form class="feedback-form" method="post" action="{% url 'feedback' %}">
+                {% csrf_token %}
                 <div class="form-row">
                     <label class="form-label" for="id_name">Имя</label>
                     <input type="text" id="id_name" name="name" class="form-input" placeholder="Ваше имя" required>

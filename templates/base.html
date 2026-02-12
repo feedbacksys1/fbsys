@@ -13,14 +13,16 @@
 <body class="{% block body_class %}{% endblock %}">
     <header class="site-header">
         <div class="header-inner">
-            <a href="{% url 'landing' %}" class="logo">Система обратной связи</a>
-            <nav class="main-nav">
+            <nav class="header-nav header-nav-left">
                 <a href="{% url 'landing' %}">Главная</a>
                 <a href="{% url 'contacts' %}">Контакты</a>
                 <a href="{% url 'feedback' %}">Обратная связь</a>
-                <a href="{% url 'site_login' %}">Войти</a>
-                <a href="{% url 'site_register' %}">Регистрация</a>
             </nav>
+            <a href="{% url 'landing' %}" class="logo">Система обратной связи</a>
+            <div class="header-nav header-nav-right">
+                <a href="{% url 'site_login' %}" class="btn btn-header">Войти</a>
+                <a href="{% url 'site_register' %}" class="btn btn-header btn-header-primary">Регистрация</a>
+            </div>
         </div>
     </header>
     <main class="site-main">

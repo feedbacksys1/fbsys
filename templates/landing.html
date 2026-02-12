@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<section class="landing-hero">
+    <p class="landing-university">Московский университет имени М.Ю. Витте</p>
+    <h1>Система обратной связи</h1>
+    <p class="subtitle">Удобный обмен обратной связью между студентами и преподавателями университета</p>
+    <div class="landing-cards">
+        <div class="landing-card">
+            <h3>Для студентов</h3>
+            <p>Оставляйте отзывы о курсах и преподавателях, получайте ответы на вопросы</p>
+        </div>
+        <div class="landing-card">
+            <h3>Для преподавателей</h3>
+            <p>Читайте обратную связь от студентов и отвечайте на неё в одном месте</p>
+        </div>
+        <div class="landing-card">
+            <h3>Прозрачность</h3>
+            <p>Вся коммуникация в рамках университета — просто и понятно</p>
+        </div>
+    </div>
+    <div class="landing-cta">
+        <a href="#" class="btn btn-primary">Войти</a>
+        <a href="#" class="btn btn-outline">Регистрация</a>
+    </div>
+</section>
+{% endblock %}

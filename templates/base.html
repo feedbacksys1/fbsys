@@ -27,7 +27,7 @@
                     </button>
                     <div class="header-dropdown-menu" aria-labelledby="user-menu-btn">
                         {% if user.is_staff %}
-                        <a href="{% url 'admin:index' %}">Админ панель</a>
+                        <a href="{% url 'admin_panel' %}">Админ панель</a>
                         {% else %}
                         <a href="#">Личный кабинет</a>
                         {% endif %}

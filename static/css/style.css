@@ -150,6 +150,82 @@ body.register-fullpage {
     color: var(--color-primary);
 }
 
+.admin-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.admin-layout {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.admin-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--color-primary);
+    padding: 1.5rem 0;
+}
+
+.admin-sidebar-back {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9375rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
+
+.admin-sidebar-back:hover {
+    color: var(--color-accent);
+}
+
+.admin-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+}
+
+.admin-sidebar-link {
+    display: block;
+    padding: 0.625rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
+
+.admin-sidebar-link:hover,
+.admin-sidebar-link.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-surface);
+}
+
+.admin-main {
+    flex: 1;
+    padding: 2rem;
+    background: var(--color-bg);
+    overflow: auto;
+}
+
+.admin-content {
+    max-width: 900px;
+}
+
+.admin-page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.admin-page-lead {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
 .site-main {
     flex: 1;
     max-width: 1200px;

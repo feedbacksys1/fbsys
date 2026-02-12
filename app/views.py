@@ -3,6 +3,7 @@
 """
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from .forms import RegistrationForm, LoginForm
 
@@ -67,3 +68,16 @@ def logout_view(request):
     """
     logout(request)
     return redirect('landing')
+
+
+def _is_staff(user):
+    return user.is_authenticated and user.is_staff
+
+
+@login_required
+@user_passes_test(_is_staff, login_url='landing')
+def admin_panel(request):
+    """
+    Кастомная админ-панель сервиса (только для staff).
+    """
+    return render(request, 'admin_panel.html')

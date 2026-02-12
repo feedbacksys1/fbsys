@@ -30,6 +30,11 @@ body {
     flex-direction: column;
 }
 
+body.register-fullpage {
+    height: 100vh;
+    overflow: hidden;
+}
+
 .site-header {
     background: var(--color-primary);
     color: var(--color-surface);
@@ -79,9 +84,16 @@ body {
     width: 100%;
 }
 
-.site-main:has(.landing-page) {
+.site-main:has(.landing-page),
+.site-main:has(.register-split) {
     max-width: 100%;
     padding: 0;
+}
+
+.site-main:has(.register-split) {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .site-footer {
@@ -555,6 +567,93 @@ body {
 
 .auth-switch a:hover {
     text-decoration: underline;
+}
+
+.register-split {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+}
+
+.register-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 2.5rem;
+    min-height: 0;
+}
+
+.register-panel-left {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    align-items: center;
+    text-align: center;
+}
+
+.register-panel-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-surface);
+    margin-bottom: 0.75rem;
+}
+
+.register-panel-lead {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 320px;
+}
+
+.register-panel-right {
+    background: var(--color-bg);
+}
+
+.register-form-wrap {
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.register-panel-right .auth-form .form-row {
+    margin-bottom: 1.25rem;
+}
+
+.register-panel-right .auth-form .form-actions {
+    margin-top: 0.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.register-panel-right .auth-switch {
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 900px) {
+    body.register-fullpage {
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+    }
+
+    .site-main:has(.register-split) {
+        min-height: 0;
+        overflow: visible;
+    }
+
+    .register-split {
+        flex-direction: column;
+        min-height: auto;
+        height: auto;
+    }
+
+    .register-panel {
+        padding: 2rem 1.5rem;
+    }
+
+    .register-panel-left {
+        min-height: 200px;
+    }
 }
 
 @media (max-width: 900px) {

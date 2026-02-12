@@ -3,27 +3,55 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-<section class="landing-hero">
-    <p class="landing-university">Московский университет имени М.Ю. Витте</p>
-    <h1>Система обратной связи</h1>
-    <p class="subtitle">Удобный обмен обратной связью между студентами и преподавателями университета</p>
-    <div class="landing-cards">
-        <div class="landing-card">
-            <h3>Для студентов</h3>
-            <p>Оставляйте отзывы о курсах и преподавателях, получайте ответы на вопросы</p>
+<div class="landing-page">
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="hero-text">
+                <h1>Информационная система обслуживания заявок</h1>
+                <p class="hero-subtitle">Удобный обмен обратной связью между студентами и преподавателями университета</p>
+            </div>
+            <div class="hero-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
+            </div>
         </div>
-        <div class="landing-card">
-            <h3>Для преподавателей</h3>
-            <p>Читайте обратную связь от студентов и отвечайте на неё в одном месте</p>
+    </section>
+
+    <section class="about">
+        <div class="about-inner">
+            <h2>О сервисе</h2>
+            <p class="about-lead">Сервис обратной связи Московского университета имени М.Ю. Витте позволяет студентам и преподавателям быстро обмениваться заявками и обратной связью в одном месте.</p>
+            <ul class="advantages">
+                <li>Быстрая подача и обработка заявок</li>
+                <li>Прозрачный статус каждой заявки в личном кабинете</li>
+                <li>Единая среда для студентов и преподавателей</li>
+            </ul>
         </div>
-        <div class="landing-card">
-            <h3>Прозрачность</h3>
-            <p>Вся коммуникация в рамках университета — просто и понятно</p>
+    </section>
+
+    <div class="steps-cta-wrap">
+        <div class="steps-cta-inner">
+            <section class="how-start">
+                <h2>Как начать</h2>
+                <ol class="steps-list">
+                    <li>Зарегистрироваться на сайте</li>
+                    <li>Перейти на страницу отправки заявок и отправить заявку</li>
+                    <li>Следить за статусом в личном кабинете</li>
+                </ol>
+            </section>
+            <aside class="cta-card">
+                <h3>Начать работу</h3>
+                <div class="cta-card-buttons">
+                    <a href="#" class="btn btn-primary">Войти</a>
+                    <a href="#" class="btn btn-outline">Регистрация</a>
+                </div>
+            </aside>
         </div>
     </div>
-    <div class="landing-cta">
-        <a href="#" class="btn btn-primary">Войти</a>
-        <a href="#" class="btn btn-outline">Регистрация</a>
-    </div>
-</section>
+</div>
 {% endblock %}

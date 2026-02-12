@@ -1,0 +1,46 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Управление пользователями{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <h1 class="admin-page-title">Управление пользователями</h1>
+    <p class="admin-page-lead">Список пользователей. Выберите роль и нажмите «Сохранить».</p>
+    <form method="post" action="{% url 'admin_users' %}" class="admin-users-form">
+        {% csrf_token %}
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Логин</th>
+                        <th>Имя</th>
+                        <th>Email</th>
+                        <th>Текущая роль</th>
+                        <th>Изменить роль</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in users_with_profiles %}
+                    <tr>
+                        <td>{{ item.user.get_username }}</td>
+                        <td>{{ item.user.get_full_name|default:"—" }}</td>
+                        <td>{{ item.user.email|default:"—" }}</td>
+                        <td>{% if item.profile %}{{ item.profile.get_role_display }}{% else %}—{% endif %}</td>
+                        <td>
+                            <select name="role_{{ item.user.pk }}" class="form-input admin-role-select">
+                                {% for value, label in role_choices %}
+                                <option value="{{ value }}" {% if item.profile and item.profile.role == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

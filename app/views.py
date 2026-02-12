@@ -1,11 +1,15 @@
 """
 Представления основного приложения.
 """
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import get_user_model
 
 from .forms import RegistrationForm, LoginForm
+from .models import Profile, Role
+
+User = get_user_model()
 
 
 def landing(request):
@@ -81,3 +85,37 @@ def admin_panel(request):
     Кастомная админ-панель сервиса (только для staff).
     """
     return render(request, 'admin_panel.html')
+
+
+@login_required
+@user_passes_test(_is_staff, login_url='landing')
+def admin_users(request):
+    """
+    Управление пользователями: список и смена роли (только для staff).
+    """
+    if request.method == 'POST':
+        for key, new_role in request.POST.items():
+            if key.startswith('role_') and new_role in dict(Role.choices):
+                try:
+                    user_id = int(key.replace('role_', ''))
+                except ValueError:
+                    continue
+                user = get_object_or_404(User, pk=user_id)
+                profile, _ = Profile.objects.get_or_create(user=user, defaults={'role': Role.STUDENT})
+                profile.role = new_role
+                profile.save()
+                user.is_staff = new_role == Role.ADMIN
+                user.save(update_fields=['is_staff'])
+        return redirect('admin_users')
+    users = User.objects.all().order_by('id')
+    users_with_profiles = []
+    for u in users:
+        try:
+            profile = u.profile
+        except Profile.DoesNotExist:
+            profile = None
+        users_with_profiles.append({'user': u, 'profile': profile})
+    return render(request, 'admin_users.html', {
+        'users_with_profiles': users_with_profiles,
+        'role_choices': Role.choices,
+    })

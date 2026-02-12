@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <h1 class="auth-title">Вход</h1>
+        <p class="auth-lead">Войдите в личный кабинет</p>
+        <form class="auth-form" method="post" action="#">
+            <div class="form-row">
+                <label class="form-label" for="id_username">Email или логин</label>
+                <input type="text" id="id_username" name="username" class="form-input" placeholder="Введите email или логин" required autocomplete="username">
+            </div>
+            <div class="form-row">
+                <label class="form-label" for="id_password">Пароль</label>
+                <input type="password" id="id_password" name="password" class="form-input" placeholder="Введите пароль" required autocomplete="current-password">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-block">Войти</button>
+            </div>
+            <p class="auth-switch">
+                Нет аккаунта? <a href="{% url 'site_register' %}">Зарегистрироваться</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

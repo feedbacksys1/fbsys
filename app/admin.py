@@ -16,9 +16,12 @@ class ProfileInline(admin.StackedInline):
     verbose_name_plural = 'профиль'
 
 
-@admin.register(User)
 class UserAdmin(BaseUserAdmin):
     inlines = (ProfileInline,)
+
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 @admin.register(Profile)

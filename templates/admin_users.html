@@ -3,11 +3,16 @@
 {% block title %}Управление пользователями{% endblock %}
 
 {% block content %}
-<div class="admin-content">
+<div class="admin-content admin-content_full">
     <h1 class="admin-page-title">Управление пользователями</h1>
     <p class="admin-page-lead">Список пользователей. Выберите роль и нажмите «Сохранить».</p>
-    <form method="post" action="{% url 'admin_users' %}" class="admin-users-form">
+    <form method="get" action="{% url 'admin_users' %}" class="admin-search-form admin-search-form_full">
+        <input type="search" name="q" value="{{ search_q }}" class="form-input admin-search-input" placeholder="Поиск по логину или email" aria-label="Поиск">
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </form>
+    <form method="post" action="{% url 'admin_users' %}{% if search_q %}?q={{ search_q|urlencode }}{% endif %}" class="admin-users-form">
         {% csrf_token %}
+        {% if search_q %}<input type="hidden" name="q" value="{{ search_q }}">{% endif %}
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
@@ -15,6 +20,7 @@
                         <th>Логин</th>
                         <th>Имя</th>
                         <th>Email</th>
+                        <th>Номер студента</th>
                         <th>Текущая роль</th>
                         <th>Изменить роль</th>
                     </tr>
@@ -25,6 +31,7 @@
                         <td>{{ item.user.get_username }}</td>
                         <td>{{ item.user.get_full_name|default:"—" }}</td>
                         <td>{{ item.user.email|default:"—" }}</td>
+                        <td>{% if item.profile and item.profile.student_number %}{{ item.profile.student_number }}{% else %}—{% endif %}</td>
                         <td>{% if item.profile %}{{ item.profile.get_role_display }}{% else %}—{% endif %}</td>
                         <td>
                             <select name="role_{{ item.user.pk }}" class="form-input admin-role-select">

@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from .forms import RegistrationForm, LoginForm
 from .models import Profile, Role
@@ -106,8 +107,19 @@ def admin_users(request):
                 profile.save()
                 user.is_staff = new_role == Role.ADMIN
                 user.save(update_fields=['is_staff'])
-        return redirect('admin_users')
+        from django.urls import reverse
+        from urllib.parse import urlencode
+        url = reverse('admin_users')
+        q = request.POST.get('q', '').strip()
+        if q:
+            url += '?' + urlencode({'q': q})
+        return redirect(url)
     users = User.objects.all().order_by('id')
+    search_q = request.GET.get('q', '').strip()
+    if search_q:
+        users = users.filter(
+            Q(username__icontains=search_q) | Q(email__icontains=search_q)
+        )
     users_with_profiles = []
     for u in users:
         try:
@@ -118,4 +130,5 @@ def admin_users(request):
     return render(request, 'admin_users.html', {
         'users_with_profiles': users_with_profiles,
         'role_choices': Role.choices,
+        'search_q': search_q,
     })

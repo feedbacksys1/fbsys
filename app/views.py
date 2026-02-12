@@ -209,6 +209,9 @@ def cabinet_view(request):
                     req.status_changed_at = timezone.now()
                     req.save()
                     messages.success(request, 'Статус заявки обновлён.')
+                    redirect_status = request.POST.get('redirect_status')
+                    if redirect_status and redirect_status in dict(FeedbackStatus.choices):
+                        return redirect('cabinet' + '?status=' + redirect_status)
                     return redirect('cabinet')
                 except (StudentRequest.DoesNotExist, ValueError):
                     pass
@@ -222,17 +225,28 @@ def cabinet_view(request):
             except (StudentRequest.DoesNotExist, ValueError):
                 pass
 
+    filter_status = request.GET.get('status')
+    if filter_status not in dict(FeedbackStatus.choices):
+        filter_status = None
+
     context = {
         'page_title': page_title,
         'role': role,
         'request_form': request_form,
         'detail_request': detail_request,
         'status_choices': list(FeedbackStatus.choices),
+        'filter_status': filter_status,
     }
     if role == Role.STUDENT:
-        context['sent_requests'] = StudentRequest.objects.filter(sender=request.user).select_related('recipient')
+        qs = StudentRequest.objects.filter(sender=request.user).select_related('recipient')
+        if filter_status:
+            qs = qs.filter(status=filter_status)
+        context['sent_requests'] = qs
     if role == Role.TEACHER:
-        context['received_requests'] = StudentRequest.objects.filter(recipient=request.user).select_related('sender')
+        qs = StudentRequest.objects.filter(recipient=request.user).select_related('sender')
+        if filter_status:
+            qs = qs.filter(status=filter_status)
+        context['received_requests'] = qs
     return render(request, 'cabinet.html', context)
 
 

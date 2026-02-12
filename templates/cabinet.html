@@ -20,6 +20,13 @@
         {% if role == 'teacher' %}
         <section class="cabinet-card cabinet-requests-card">
             <h2 class="cabinet-card-title">Входящие заявки</h2>
+            <div class="cabinet-filter">
+                <span class="cabinet-filter-label">Статус:</span>
+                <a href="{% url 'cabinet' %}" class="cabinet-filter-link {% if not filter_status %}is-active{% endif %}">Все</a>
+                {% for value, label in status_choices %}
+                <a href="{% url 'cabinet' %}?status={{ value }}" class="cabinet-filter-link {% if filter_status == value %}is-active{% endif %}">{{ label }}</a>
+                {% endfor %}
+            </div>
             {% if received_requests %}
             <div class="cabinet-requests-wrap">
                 <table class="cabinet-requests-table">
@@ -39,7 +46,7 @@
                             <td>{{ req.sender.get_full_name|default:req.sender.get_username }}</td>
                             <td>{{ req.topic|default:"—" }}</td>
                             <td><span class="cabinet-status cabinet-status-{{ req.status }}">{{ req.get_status_display }}</span></td>
-                            <td><a href="{% url 'cabinet' %}?detail={{ req.id }}" class="btn btn-primary btn-small">Детали</a></td>
+                            <td><a href="{% url 'cabinet' %}?detail={{ req.id }}{% if filter_status %}&status={{ filter_status }}{% endif %}" class="btn btn-primary btn-small">Детали</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -55,7 +62,7 @@
             <div class="cabinet-modal-box cabinet-modal-box_wide">
                 <div class="cabinet-modal-header">
                     <h2 class="cabinet-modal-title" id="cabinet-detail-modal-title">Детали заявки</h2>
-                    <a href="{% url 'cabinet' %}" class="cabinet-modal-close" aria-label="Закрыть">&times;</a>
+                    <a href="{% url 'cabinet' %}{% if filter_status %}?status={{ filter_status }}{% endif %}" class="cabinet-modal-close" aria-label="Закрыть">&times;</a>
                 </div>
                 <div class="cabinet-modal-body">
                     {% if detail_request %}
@@ -78,6 +85,7 @@
                     <form method="post" action="{% url 'cabinet' %}" class="cabinet-status-form">
                         {% csrf_token %}
                         <input type="hidden" name="request_id" value="{{ detail_request.id }}">
+                        {% if filter_status %}<input type="hidden" name="redirect_status" value="{{ filter_status }}">{% endif %}
                         <div class="form-row">
                             <label class="form-label" for="id_new_status">Изменить статус</label>
                             <select name="new_status" id="id_new_status" class="form-input form-select">
@@ -97,6 +105,13 @@
         {% else %}
         <section class="cabinet-card cabinet-requests-card">
             <h2 class="cabinet-card-title">Мои заявки</h2>
+            <div class="cabinet-filter">
+                <span class="cabinet-filter-label">Статус:</span>
+                <a href="{% url 'cabinet' %}" class="cabinet-filter-link {% if not filter_status %}is-active{% endif %}">Все</a>
+                {% for value, label in status_choices %}
+                <a href="{% url 'cabinet' %}?status={{ value }}" class="cabinet-filter-link {% if filter_status == value %}is-active{% endif %}">{{ label }}</a>
+                {% endfor %}
+            </div>
             {% if sent_requests %}
             <div class="cabinet-requests-wrap">
                 <table class="cabinet-requests-table">
@@ -200,7 +215,7 @@
 (function() {
     var modal = document.getElementById('cabinet-detail-modal');
     var backdrop = document.getElementById('cabinet-detail-backdrop');
-    var cabinetUrl = "{% url 'cabinet' %}";
+    var cabinetUrl = "{% url 'cabinet' %}{% if filter_status %}?status={{ filter_status }}{% endif %}";
     if (!modal) return;
     if (modal.getAttribute('data-open-on-load') === 'true') {
         modal.classList.add('is-open');

@@ -26,7 +26,11 @@
                         {{ user.get_username }}
                     </button>
                     <div class="header-dropdown-menu" aria-labelledby="user-menu-btn">
+                        {% if user.is_staff %}
+                        <a href="{% url 'admin:index' %}">Админ панель</a>
+                        {% else %}
                         <a href="#">Личный кабинет</a>
+                        {% endif %}
                         <a href="{% url 'site_logout' %}">Выход</a>
                     </div>
                 </div>

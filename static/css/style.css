@@ -297,6 +297,10 @@ body.register-fullpage {
     max-width: 200px;
 }
 
+.admin-feedback-message {
+    max-width: 200px;
+}
+
 .admin-form-actions {
     margin-top: 0.5rem;
 }

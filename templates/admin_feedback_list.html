@@ -1,0 +1,62 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Просмотр форм обратной связи{% endblock %}
+
+{% block content %}
+<div class="admin-content admin-content_full">
+    <h1 class="admin-page-title">Просмотр форм обратной связи</h1>
+    <p class="admin-page-lead">Список обращений. Выберите новый статус и нажмите «Сохранить».</p>
+    <form method="post" action="{% url 'admin_feedback_list' %}" class="admin-users-form">
+        {% csrf_token %}
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Дата отправки</th>
+                        <th>Имя</th>
+                        <th>Почта</th>
+                        <th>Телефон</th>
+                        <th>Тема</th>
+                        <th>Сообщение</th>
+                        <th>Статус</th>
+                        <th>Дата изменения статуса</th>
+                        <th>Изменил статус</th>
+                        <th>Изменить статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fb in feedback_list %}
+                    <tr>
+                        <td>{{ fb.created_at|date:"d.m.Y H:i" }}</td>
+                        <td>{{ fb.name }}</td>
+                        <td>{{ fb.email }}</td>
+                        <td>{{ fb.phone|default:"—" }}</td>
+                        <td>{{ fb.topic|default:"—" }}</td>
+                        <td class="admin-feedback-message">{{ fb.message|truncatewords:15 }}</td>
+                        <td>{{ fb.get_status_display }}</td>
+                        <td>{% if fb.status_changed_at %}{{ fb.status_changed_at|date:"d.m.Y H:i" }}{% else %}—{% endif %}</td>
+                        <td>{% if fb.status_changed_by %}{{ fb.status_changed_by.get_username }}{% else %}—{% endif %}</td>
+                        <td>
+                            <select name="status_{{ fb.pk }}" class="form-input admin-role-select">
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if fb.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10">Обращений пока нет.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if feedback_list %}
+        <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

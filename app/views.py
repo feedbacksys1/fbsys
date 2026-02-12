@@ -6,11 +6,12 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.utils import timezone
 
 from django.contrib import messages
 
 from .forms import RegistrationForm, LoginForm
-from .models import Profile, Role, GeneralFeedback
+from .models import Profile, Role, GeneralFeedback, FeedbackStatus
 
 User = get_user_model()
 
@@ -168,4 +169,32 @@ def admin_users(request):
         'users_with_profiles': users_with_profiles,
         'role_choices': Role.choices,
         'search_q': search_q,
+    })
+
+
+@login_required
+@user_passes_test(_is_staff, login_url='landing')
+def admin_feedback_list(request):
+    """
+    Просмотр форм обратной связи и смена статусов (только для staff).
+    """
+    if request.method == 'POST':
+        now = timezone.now()
+        for key, new_status in request.POST.items():
+            if key.startswith('status_') and new_status in dict(FeedbackStatus.choices):
+                try:
+                    fb_id = int(key.replace('status_', ''))
+                except ValueError:
+                    continue
+                fb = get_object_or_404(GeneralFeedback, pk=fb_id)
+                if fb.status != new_status:
+                    fb.status = new_status
+                    fb.status_changed_at = now
+                    fb.status_changed_by = request.user
+                    fb.save()
+        return redirect('admin_feedback_list')
+    feedback_list = GeneralFeedback.objects.all()
+    return render(request, 'admin_feedback_list.html', {
+        'feedback_list': feedback_list,
+        'status_choices': FeedbackStatus.choices,
     })

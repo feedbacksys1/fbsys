@@ -28,5 +28,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='site_logout'),
     path('admin-panel/', views.admin_panel, name='admin_panel'),
     path('admin-panel/users/', views.admin_users, name='admin_users'),
+    path('admin-panel/feedback/', views.admin_feedback_list, name='admin_feedback_list'),
     path('admin/', admin.site.urls),
 ]

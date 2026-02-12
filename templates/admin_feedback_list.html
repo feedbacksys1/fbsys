@@ -6,6 +6,13 @@
 <div class="admin-content admin-content_full">
     <h1 class="admin-page-title">Просмотр форм обратной связи</h1>
     <p class="admin-page-lead">Список обращений. Нажмите «Детали» для просмотра и изменения статуса.</p>
+    <div class="admin-filter">
+        <span class="admin-filter-label">Статус:</span>
+        <a href="{% url 'admin_feedback_list' %}" class="admin-filter-link {% if not filter_status %}is-active{% endif %}">Все</a>
+        {% for value, label in status_choices %}
+        <a href="{% url 'admin_feedback_list' %}?status={{ value }}" class="admin-filter-link {% if filter_status == value %}is-active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
     <div class="admin-table-wrap">
         <table class="admin-table">
             <thead>
@@ -22,7 +29,7 @@
                 <tr>
                     <td>{{ fb.created_at|date:"d.m.Y H:i" }}</td>
                     <td>{{ fb.topic|default:"—" }}</td>
-                    <td>{{ fb.get_status_display }}</td>
+                    <td><span class="status-badge status-badge_{{ fb.status }}">{{ fb.get_status_display }}</span></td>
                     <td>{% if fb.status_changed_at %}{{ fb.status_changed_at|date:"d.m.Y H:i" }}{% else %}—{% endif %}</td>
                     <td>
                         <button type="button" class="btn btn-primary btn-details" data-details-id="{{ fb.pk }}">Детали</button>
@@ -53,8 +60,10 @@
                 <dt>Сообщение</dt>
                 <dd class="modal-message">{{ fb.message }}</dd>
             </dl>
-            <form method="post" action="{% url 'admin_feedback_list' %}" class="modal-status-form">
+            <p class="modal-current-status">Текущий статус: <span class="status-badge status-badge_{{ fb.status }}">{{ fb.get_status_display }}</span></p>
+            <form method="post" action="{% url 'admin_feedback_list' %}{% if filter_status %}?status={{ filter_status }}{% endif %}" class="modal-status-form">
                 {% csrf_token %}
+                {% if filter_status %}<input type="hidden" name="filter_status" value="{{ filter_status }}">{% endif %}
                 <label class="form-label" for="modal-status-{{ fb.pk }}">Статус</label>
                 <select name="status_{{ fb.pk }}" id="modal-status-{{ fb.pk }}" class="form-input admin-role-select">
                     {% for value, label in status_choices %}

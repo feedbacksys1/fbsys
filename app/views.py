@@ -192,9 +192,19 @@ def admin_feedback_list(request):
                     fb.status_changed_at = now
                     fb.status_changed_by = request.user
                     fb.save()
-        return redirect('admin_feedback_list')
+        from django.urls import reverse
+        from urllib.parse import urlencode
+        url = reverse('admin_feedback_list')
+        status_param = request.POST.get('filter_status', '').strip()
+        if status_param and status_param in dict(FeedbackStatus.choices):
+            url += '?' + urlencode({'status': status_param})
+        return redirect(url)
     feedback_list = GeneralFeedback.objects.all()
+    filter_status = request.GET.get('status', '').strip()
+    if filter_status and filter_status in dict(FeedbackStatus.choices):
+        feedback_list = feedback_list.filter(status=filter_status)
     return render(request, 'admin_feedback_list.html', {
         'feedback_list': feedback_list,
         'status_choices': FeedbackStatus.choices,
+        'filter_status': filter_status,
     })

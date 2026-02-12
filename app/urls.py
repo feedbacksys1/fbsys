@@ -22,5 +22,6 @@ from . import views
 urlpatterns = [
     path('', views.landing, name='landing'),
     path('contacts/', views.contacts, name='contacts'),
+    path('feedback/', views.feedback, name='feedback'),
     path('admin/', admin.site.urls),
 ]

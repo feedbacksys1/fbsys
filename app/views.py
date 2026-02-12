@@ -16,3 +16,10 @@ def contacts(request):
     Страница контактов.
     """
     return render(request, 'contacts.html')
+
+
+def feedback(request):
+    """
+    Страница обратной связи (общая форма для пользователей сайта).
+    """
+    return render(request, 'feedback.html')

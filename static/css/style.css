@@ -190,6 +190,8 @@ body {
     border-radius: 0 var(--radius) var(--radius) 0;
     font-size: 0.9375rem;
     color: var(--color-text);
+    display: flex;
+    align-items: center;
 }
 
 .advantage-title {

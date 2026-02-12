@@ -976,8 +976,31 @@ body.register-fullpage {
     margin: 0 auto;
 }
 
-.cabinet-page .page-title {
+.cabinet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
     margin-bottom: 1.5rem;
+}
+
+.cabinet-page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.cabinet-btn-request {
+    flex-shrink: 0;
+}
+
+.cabinet-subtitle {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin: -0.5rem 0 1.5rem 0;
 }
 
 .cabinet-content {
@@ -1012,8 +1035,146 @@ body.register-fullpage {
     border-bottom: 1px solid var(--color-border);
 }
 
-.cabinet-request-card {
-    margin-top: 1.5rem;
+.cabinet-requests-card .cabinet-card-title {
+    margin-bottom: 1rem;
+}
+
+.cabinet-requests-wrap {
+    overflow-x: auto;
+}
+
+.cabinet-requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+}
+
+.cabinet-requests-table th,
+.cabinet-requests-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.cabinet-requests-table th {
+    font-weight: 600;
+    color: var(--color-text-muted);
+    background: var(--color-bg);
+}
+
+.cabinet-requests-table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.cabinet-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.cabinet-status-new {
+    background: #c6f6d5;
+    color: #276749;
+}
+
+.cabinet-status-in_progress {
+    background: #feebc8;
+    color: #c05621;
+}
+
+.cabinet-status-reviewed {
+    background: #fed7d7;
+    color: #c53030;
+}
+
+.cabinet-empty {
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+/* Модальное окно заявки */
+.cabinet-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.2s, opacity 0.2s;
+}
+
+.cabinet-modal.is-open {
+    visibility: visible;
+    opacity: 1;
+}
+
+.cabinet-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.cabinet-modal-box {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--color-border);
+}
+
+.cabinet-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.cabinet-modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.cabinet-modal-close {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.cabinet-modal-close:hover {
+    color: var(--color-text);
+    background: var(--color-bg);
+}
+
+.cabinet-modal-body {
+    padding: 1.5rem;
+}
+
+.cabinet-modal-body .cabinet-request-form .form-row {
+    margin-bottom: 1.25rem;
+}
+
+.cabinet-modal-body .cabinet-request-form .form-actions {
+    margin-top: 1.25rem;
 }
 
 .cabinet-request-form .form-row {

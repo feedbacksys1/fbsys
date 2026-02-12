@@ -4,53 +4,122 @@
 
 {% block content %}
 <div class="cabinet-page">
-    <h1 class="page-title">{{ page_title }}</h1>
+    <header class="cabinet-header">
+        <h1 class="cabinet-page-title">{{ page_title }}</h1>
+        {% if role == 'student' %}
+        <button type="button" class="btn btn-primary cabinet-btn-request" id="cabinet-open-request-btn" aria-controls="cabinet-request-modal">Отправить заявку</button>
+        {% endif %}
+    </header>
+    {% if role == 'student' %}
+    <p class="cabinet-subtitle">Здесь вы можете посмотреть свои заявки или отправить новую</p>
+    {% endif %}
     <div class="cabinet-content">
+        {% if role == 'teacher' %}
         <section class="cabinet-card">
             <p class="cabinet-greeting">
                 Здравствуйте, {{ user.get_full_name|default:user.get_username }}.
             </p>
-            {% if role == 'teacher' %}
             <p class="page-lead">Здесь вы можете управлять заявками. Функции панели будут добавлены позже.</p>
+        </section>
+        {% else %}
+        <section class="cabinet-card cabinet-requests-card">
+            <h2 class="cabinet-card-title">Мои заявки</h2>
+            {% if sent_requests %}
+            <div class="cabinet-requests-wrap">
+                <table class="cabinet-requests-table">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Преподаватель</th>
+                            <th>Тема</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in sent_requests %}
+                        <tr>
+                            <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>{{ req.recipient.get_full_name|default:req.recipient.get_username }}</td>
+                            <td>{{ req.topic|default:"—" }}</td>
+                            <td><span class="cabinet-status cabinet-status-{{ req.status }}">{{ req.get_status_display }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% else %}
-            <p class="page-lead">Здесь отображаются ваши заявки и учётная информация. Раздел будет дополняться.</p>
+            <p class="cabinet-empty">У вас пока нет заявок. Нажмите «Отправить заявку», чтобы создать первую.</p>
             {% endif %}
         </section>
-        {% if role == 'student' %}
-        <section class="cabinet-card cabinet-request-card">
-            <h2 class="cabinet-card-title">Заявка преподавателю</h2>
-            <form class="cabinet-request-form" method="post" action="{% url 'cabinet' %}">
-                {% csrf_token %}
-                <div class="form-row">
-                    <label class="form-label" for="id_recipient">Преподаватель</label>
-                    {{ request_form.recipient }}
-                    {% if request_form.recipient.errors %}
-                    <ul class="form-errors">{% for e in request_form.recipient.errors %}<li>{{ e }}</li>{% endfor %}</ul>
-                    {% endif %}
+
+        <div class="cabinet-modal" id="cabinet-request-modal" role="dialog" aria-labelledby="cabinet-modal-title" aria-modal="true"{% if request_form and request_form.errors %} data-open-on-load="true"{% endif %}>
+            <div class="cabinet-modal-backdrop" id="cabinet-modal-backdrop"></div>
+            <div class="cabinet-modal-box">
+                <div class="cabinet-modal-header">
+                    <h2 class="cabinet-modal-title" id="cabinet-modal-title">Заявка преподавателю</h2>
+                    <button type="button" class="cabinet-modal-close" id="cabinet-modal-close" aria-label="Закрыть">&times;</button>
                 </div>
-                <div class="form-row">
-                    <label class="form-label" for="id_topic">Тема</label>
-                    {{ request_form.topic }}
-                    {% if request_form.topic.errors %}
-                    <ul class="form-errors">{% for e in request_form.topic.errors %}<li>{{ e }}</li>{% endfor %}</ul>
-                    {% endif %}
+                <div class="cabinet-modal-body">
+                    <form class="cabinet-request-form" method="post" action="{% url 'cabinet' %}">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <label class="form-label" for="id_recipient">Преподаватель</label>
+                            {{ request_form.recipient }}
+                            {% if request_form.recipient.errors %}
+                            <ul class="form-errors">{% for e in request_form.recipient.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                            {% endif %}
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label" for="id_topic">Тема</label>
+                            {{ request_form.topic }}
+                            {% if request_form.topic.errors %}
+                            <ul class="form-errors">{% for e in request_form.topic.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                            {% endif %}
+                        </div>
+                        <div class="form-row">
+                            <label class="form-label" for="id_message">Сообщение</label>
+                            {{ request_form.message }}
+                            {% if request_form.message.errors %}
+                            <ul class="form-errors">{% for e in request_form.message.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                            {% endif %}
+                        </div>
+                        {% if request_form.non_field_errors %}
+                        <ul class="form-errors form-errors-general">{% for e in request_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                        {% endif %}
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Отправить заявку</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-row">
-                    <label class="form-label" for="id_message">Сообщение</label>
-                    {{ request_form.message }}
-                    {% if request_form.message.errors %}
-                    <ul class="form-errors">{% for e in request_form.message.errors %}<li>{{ e }}</li>{% endfor %}</ul>
-                    {% endif %}
-                </div>
-                {% if request_form.non_field_errors %}
-                <ul class="form-errors form-errors-general">{% for e in request_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
-                {% endif %}
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Отправить заявку</button>
-                </div>
-            </form>
-        </section>
+            </div>
+        </div>
         {% endif %}
     </div>
 </div>
+{% if role == 'student' %}
+<script>
+(function() {
+    var modal = document.getElementById('cabinet-request-modal');
+    var openBtn = document.getElementById('cabinet-open-request-btn');
+    var closeBtn = document.getElementById('cabinet-modal-close');
+    var backdrop = document.getElementById('cabinet-modal-backdrop');
+    if (!modal) return;
+    function openModal() {
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        modal.classList.remove('is-open');
+        document.body.style.overflow = '';
+    }
+    if (modal.getAttribute('data-open-on-load') === 'true') openModal();
+    if (openBtn) openBtn.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (backdrop) backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+    });
+})();
+</script>
+{% endif %}
 {% endblock %}

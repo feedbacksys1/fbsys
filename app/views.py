@@ -196,11 +196,14 @@ def cabinet_view(request):
             messages.success(request, 'Заявка успешно отправлена.')
             return redirect('cabinet')
 
-    return render(request, 'cabinet.html', {
+    context = {
         'page_title': page_title,
         'role': role,
         'request_form': request_form,
-    })
+    }
+    if role == Role.STUDENT:
+        context['sent_requests'] = StudentRequest.objects.filter(sender=request.user).select_related('recipient')
+    return render(request, 'cabinet.html', context)
 
 
 @login_required

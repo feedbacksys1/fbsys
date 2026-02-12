@@ -58,12 +58,6 @@ class RegistrationForm(UserCreationForm):
             'placeholder': 'Номер студенческого билета',
         }),
     )
-    role = forms.ChoiceField(
-        choices=[(Role.STUDENT, 'Студент'), (Role.TEACHER, 'Преподаватель')],
-        initial=Role.STUDENT,
-        label='Роль',
-        widget=forms.Select(attrs={'class': 'form-input'}),
-    )
     password1 = forms.CharField(
         label='Пароль',
         widget=forms.PasswordInput(attrs={
@@ -97,11 +91,10 @@ class RegistrationForm(UserCreationForm):
         user.last_name = self.cleaned_data['last_name']
         if commit:
             user.save()
-            role = self.cleaned_data.get('role', Role.STUDENT)
             student_number = self.cleaned_data.get('student_number', '')
             Profile.objects.create(
                 user=user,
-                role=role,
+                role=Role.STUDENT,
                 student_number=student_number,
             )
         return user

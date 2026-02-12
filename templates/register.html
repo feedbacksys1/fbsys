@@ -60,13 +60,6 @@
                     {% endif %}
                 </div>
                 <div class="form-row">
-                    <label class="form-label" for="id_role">Роль</label>
-                    {{ form.role }}
-                    {% if form.role.errors %}
-                    <ul class="form-errors">{% for e in form.role.errors %}<li>{{ e }}</li>{% endfor %}</ul>
-                    {% endif %}
-                </div>
-                <div class="form-row">
                     <label class="form-label" for="id_password1">Пароль</label>
                     {{ form.password1 }}
                     {% if form.password1.errors %}

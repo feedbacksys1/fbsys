@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="cabinet-page">
+    <h1 class="page-title">{{ page_title }}</h1>
+    <div class="cabinet-content">
+        <section class="cabinet-card">
+            <p class="cabinet-greeting">
+                Здравствуйте, {{ user.get_full_name|default:user.get_username }}.
+            </p>
+            {% if role == 'teacher' %}
+            <p class="page-lead">Здесь вы можете управлять заявками. Функции панели будут добавлены позже.</p>
+            {% else %}
+            <p class="page-lead">Здесь отображаются ваши заявки и учётная информация. Раздел будет дополняться.</p>
+            {% endif %}
+        </section>
+    </div>
+</div>
+{% endblock %}

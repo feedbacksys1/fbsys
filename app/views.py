@@ -166,6 +166,26 @@ def _is_staff(user):
 
 
 @login_required
+def cabinet_view(request):
+    """
+    Личный кабинет для студентов и панель управления для преподавателей.
+    Доступ только для не-админов; админы перенаправляются в админ-панель.
+    """
+    if request.user.is_staff:
+        return redirect('admin_panel')
+    try:
+        profile = request.user.profile
+        role = profile.role
+    except Profile.DoesNotExist:
+        role = Role.STUDENT
+    page_title = 'Панель управления' if role == Role.TEACHER else 'Личный кабинет'
+    return render(request, 'cabinet.html', {
+        'page_title': page_title,
+        'role': role,
+    })
+
+
+@login_required
 @user_passes_test(_is_staff, login_url='landing')
 def admin_panel(request):
     """

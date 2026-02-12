@@ -29,7 +29,7 @@
                         {% if user.is_staff %}
                         <a href="{% url 'admin_panel' %}">Админ панель</a>
                         {% else %}
-                        <a href="#">Личный кабинет</a>
+                        <a href="{% url 'cabinet' %}">{% if user_profile and user_profile.role == 'teacher' %}Панель управления{% else %}Личный кабинет{% endif %}</a>
                         {% endif %}
                         <a href="{% url 'settings' %}">Настройки</a>
                         <a href="{% url 'site_logout' %}">Выход</a>

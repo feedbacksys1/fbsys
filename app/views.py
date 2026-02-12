@@ -2,7 +2,7 @@
 Представления основного приложения.
 """
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 
 from .forms import RegistrationForm, LoginForm
 
@@ -59,3 +59,11 @@ def register(request):
     else:
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
+
+
+def logout_view(request):
+    """
+    Выход из учётной записи (GET для перехода по ссылке).
+    """
+    logout(request)
+    return redirect('landing')

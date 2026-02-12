@@ -10,8 +10,8 @@ from django.utils import timezone
 
 from django.contrib import messages
 
-from .forms import RegistrationForm, LoginForm, ProfileSettingsForm, PasswordChangeFormStyled
-from .models import Profile, Role, GeneralFeedback, FeedbackStatus
+from .forms import RegistrationForm, LoginForm, ProfileSettingsForm, PasswordChangeFormStyled, StudentRequestForm
+from .models import Profile, Role, GeneralFeedback, FeedbackStatus, StudentRequest
 
 User = get_user_model()
 
@@ -170,6 +170,7 @@ def cabinet_view(request):
     """
     Личный кабинет для студентов и панель управления для преподавателей.
     Доступ только для не-админов; админы перенаправляются в админ-панель.
+    Обработка формы заявки преподавателю (только для студентов).
     """
     if request.user.is_staff:
         return redirect('admin_panel')
@@ -179,9 +180,26 @@ def cabinet_view(request):
     except Profile.DoesNotExist:
         role = Role.STUDENT
     page_title = 'Панель управления' if role == Role.TEACHER else 'Личный кабинет'
+
+    request_form = None
+    if role == Role.STUDENT:
+        request_form = StudentRequestForm(
+            request.POST if request.method == 'POST' else None
+        )
+        if request.method == 'POST' and request_form.is_valid():
+            StudentRequest.objects.create(
+                sender=request.user,
+                recipient=request_form.cleaned_data['recipient'],
+                topic=(request_form.cleaned_data.get('topic') or '').strip(),
+                message=request_form.cleaned_data['message'].strip(),
+            )
+            messages.success(request, 'Заявка успешно отправлена.')
+            return redirect('cabinet')
+
     return render(request, 'cabinet.html', {
         'page_title': page_title,
         'role': role,
+        'request_form': request_form,
     })
 
 

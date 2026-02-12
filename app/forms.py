@@ -10,6 +10,48 @@ from .models import Profile, Role
 User = get_user_model()
 
 
+def get_teachers_queryset():
+    """Пользователи с ролью «Преподаватель» для выбора в заявке."""
+    return User.objects.filter(profile__role=Role.TEACHER).order_by('last_name', 'first_name')
+
+
+class StudentRequestForm(forms.Form):
+    recipient = forms.ModelChoiceField(
+        queryset=User.objects.none(),
+        label='Преподаватель',
+        widget=forms.Select(attrs={'class': 'form-input form-select'}),
+        empty_label='Выберите преподавателя',
+    )
+    topic = forms.CharField(
+        max_length=200,
+        required=False,
+        label='Тема',
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Кратко укажите тему обращения',
+            'maxlength': '200',
+        }),
+    )
+    message = forms.CharField(
+        label='Сообщение',
+        widget=forms.Textarea(attrs={
+            'class': 'form-input form-textarea',
+            'rows': 5,
+            'placeholder': 'Текст заявки',
+        }),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['recipient'].queryset = get_teachers_queryset()
+
+    def clean_message(self):
+        message = (self.cleaned_data.get('message') or '').strip()
+        if not message:
+            raise forms.ValidationError('Введите текст сообщения.')
+        return message
+
+
 class ProfileSettingsForm(forms.Form):
     first_name = forms.CharField(
         max_length=150,

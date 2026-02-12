@@ -911,6 +911,43 @@ body.register-fullpage {
     border-color: var(--color-primary);
 }
 
+/* Обёртка поля пароля с кнопкой показа/скрытия */
+.password-toggle-wrap {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.password-toggle-wrap .form-input {
+    padding-right: 2.75rem;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    padding: 0.35rem 0.5rem;
+    font-size: 0.8125rem;
+    font-family: var(--font-sans);
+    color: var(--color-primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius);
+    white-space: nowrap;
+}
+
+.password-toggle-btn:hover {
+    color: var(--color-primary-light);
+    text-decoration: underline;
+}
+
+.password-toggle-btn:focus {
+    outline: none;
+    text-decoration: underline;
+}
+
 .form-textarea {
     resize: vertical;
     min-height: 120px;

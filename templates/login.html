@@ -25,7 +25,10 @@
             </div>
             <div class="form-row">
                 <label class="form-label" for="id_password">Пароль</label>
-                {{ form.password }}
+                <div class="password-toggle-wrap">
+                    {{ form.password }}
+                    <button type="button" class="password-toggle-btn" aria-label="Показать пароль" title="Показать пароль">Показать</button>
+                </div>
                 {% if form.password.errors %}
                 <ul class="form-errors">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
                 {% endif %}

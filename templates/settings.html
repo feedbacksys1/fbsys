@@ -56,21 +56,30 @@
                 {% csrf_token %}
                 <div class="form-row">
                     <label class="form-label" for="id_old_password">Текущий пароль</label>
-                    {{ password_form.old_password }}
+                    <div class="password-toggle-wrap">
+                        {{ password_form.old_password }}
+                        <button type="button" class="password-toggle-btn" aria-label="Показать пароль" title="Показать пароль">Показать</button>
+                    </div>
                     {% if password_form.old_password.errors %}
                     <ul class="form-errors">{% for e in password_form.old_password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
                     {% endif %}
                 </div>
                 <div class="form-row">
                     <label class="form-label" for="id_new_password1">Новый пароль</label>
-                    {{ password_form.new_password1 }}
+                    <div class="password-toggle-wrap">
+                        {{ password_form.new_password1 }}
+                        <button type="button" class="password-toggle-btn" aria-label="Показать пароль" title="Показать пароль">Показать</button>
+                    </div>
                     {% if password_form.new_password1.errors %}
                     <ul class="form-errors">{% for e in password_form.new_password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>
                     {% endif %}
                 </div>
                 <div class="form-row">
                     <label class="form-label" for="id_new_password2">Повторите новый пароль</label>
-                    {{ password_form.new_password2 }}
+                    <div class="password-toggle-wrap">
+                        {{ password_form.new_password2 }}
+                        <button type="button" class="password-toggle-btn" aria-label="Показать пароль" title="Показать пароль">Показать</button>
+                    </div>
                     {% if password_form.new_password2.errors %}
                     <ul class="form-errors">{% for e in password_form.new_password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>
                     {% endif %}

@@ -70,6 +70,24 @@
                 if (!dropdown.contains(e.target)) dropdown.classList.remove('is-open');
             });
         })();
+        (function() {
+            document.querySelectorAll('.password-toggle-wrap').forEach(function(wrap) {
+                var input = wrap.querySelector('input');
+                var btn = wrap.querySelector('.password-toggle-btn');
+                if (!input || !btn) return;
+                btn.addEventListener('click', function() {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        btn.textContent = 'Скрыть';
+                        btn.setAttribute('aria-label', 'Скрыть пароль');
+                    } else {
+                        input.type = 'password';
+                        btn.textContent = 'Показать';
+                        btn.setAttribute('aria-label', 'Показать пароль');
+                    }
+                });
+            });
+        })();
     </script>
 </body>
 </html>

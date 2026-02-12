@@ -61,14 +61,20 @@
                 </div>
                 <div class="form-row">
                     <label class="form-label" for="id_password1">Пароль</label>
-                    {{ form.password1 }}
+                    <div class="password-toggle-wrap">
+                        {{ form.password1 }}
+                        <button type="button" class="password-toggle-btn" aria-label="Показать пароль" title="Показать пароль">Показать</button>
+                    </div>
                     {% if form.password1.errors %}
                     <ul class="form-errors">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>
                     {% endif %}
                 </div>
                 <div class="form-row">
                     <label class="form-label" for="id_password2">Повторите пароль</label>
-                    {{ form.password2 }}
+                    <div class="password-toggle-wrap">
+                        {{ form.password2 }}
+                        <button type="button" class="password-toggle-btn" aria-label="Показать пароль" title="Показать пароль">Показать</button>
+                    </div>
                     {% if form.password2.errors %}
                     <ul class="form-errors">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>
                     {% endif %}

@@ -301,6 +301,30 @@ body.register-fullpage {
     margin-top: 0.5rem;
 }
 
+.messages-wrap {
+    max-width: 1200px;
+    margin: 0 auto 1rem;
+    padding: 0 1.5rem;
+}
+
+.message {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.9375rem;
+}
+
+.message_success {
+    background: #c6f6d5;
+    color: #22543d;
+    border: 1px solid #9ae6b4;
+}
+
+.message_error {
+    background: #fed7d7;
+    color: #742a2a;
+    border: 1px solid #fc8181;
+}
+
 .site-main {
     flex: 1;
     max-width: 1200px;

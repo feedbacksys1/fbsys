@@ -7,8 +7,10 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
+from django.contrib import messages
+
 from .forms import RegistrationForm, LoginForm
-from .models import Profile, Role
+from .models import Profile, Role, GeneralFeedback
 
 User = get_user_model()
 
@@ -31,6 +33,40 @@ def feedback(request):
     """
     Страница обратной связи (общая форма для пользователей сайта).
     """
+    if request.method == 'POST':
+        name = (request.POST.get('name') or '').strip()
+        email = (request.POST.get('email') or '').strip()
+        phone = (request.POST.get('phone') or '').strip()
+        topic = (request.POST.get('topic') or '').strip()
+        message_text = (request.POST.get('message') or '').strip()
+        if not name or not email or not message_text:
+            messages.error(request, 'Заполните обязательные поля: Имя, Email, Сообщение.')
+            return render(request, 'feedback.html', {
+                'form_name': name,
+                'form_email': email,
+                'form_phone': phone,
+                'form_topic': topic,
+                'form_message': message_text,
+            })
+        try:
+            GeneralFeedback.objects.create(
+                name=name,
+                email=email,
+                phone=phone,
+                topic=topic,
+                message=message_text,
+            )
+            messages.success(request, 'Ваше сообщение отправлено. Мы рассмотрим его в ближайшее время.')
+            return redirect('feedback')
+        except Exception:
+            messages.error(request, 'Не удалось отправить сообщение. Попробуйте позже.')
+            return render(request, 'feedback.html', {
+                'form_name': name,
+                'form_email': email,
+                'form_phone': phone,
+                'form_topic': topic,
+                'form_message': message_text,
+            })
     return render(request, 'feedback.html')
 
 

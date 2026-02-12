@@ -30,6 +30,13 @@ def contacts(request):
     return render(request, 'contacts.html')
 
 
+def about(request):
+    """
+    Статичная страница «О нас».
+    """
+    return render(request, 'about.html')
+
+
 def faq(request):
     """
     Статичная страница «Вопросы и ответы».

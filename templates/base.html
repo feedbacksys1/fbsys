@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Система обратной связи{% endblock %} — Московский университет имени М.Ю. Витте</title>
+    <title>{% block title %}Система обратной связи{% endblock %} — Московский университет имени С.Ю. Витте</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,30 +15,33 @@
         <div class="header-inner">
             <nav class="header-nav header-nav-left">
                 <a href="{% url 'contacts' %}">Контакты</a>
+                <a href="{% url 'about' %}">О нас</a>
                 <a href="{% url 'feedback' %}">Обратная связь</a>
                 <a href="{% url 'faq' %}">FAQ</a>
             </nav>
             <a href="{% url 'landing' %}" class="logo">Система обратной связи</a>
             <div class="header-nav header-nav-right">
-                {% if user.is_authenticated %}
-                <div class="header-dropdown">
-                    <button type="button" class="btn btn-header header-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="user-menu-btn">
-                        {{ user.get_username }}
-                    </button>
-                    <div class="header-dropdown-menu" aria-labelledby="user-menu-btn">
-                        {% if user.is_staff %}
-                        <a href="{% url 'admin_panel' %}">Админ панель</a>
-                        {% else %}
-                        <a href="{% url 'cabinet' %}">{% if user_profile and user_profile.role == 'teacher' %}Панель управления{% else %}Личный кабинет{% endif %}</a>
-                        {% endif %}
-                        <a href="{% url 'settings' %}">Настройки</a>
-                        <a href="{% url 'site_logout' %}">Выход</a>
+                <div class="header-nav-auth">
+                    {% if user.is_authenticated %}
+                    <div class="header-dropdown">
+                        <button type="button" class="btn btn-header header-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="user-menu-btn">
+                            {{ user.get_username }}
+                        </button>
+                        <div class="header-dropdown-menu" aria-labelledby="user-menu-btn">
+                            {% if user.is_staff %}
+                            <a href="{% url 'admin_panel' %}">Админ панель</a>
+                            {% else %}
+                            <a href="{% url 'cabinet' %}">{% if user_profile and user_profile.role == 'teacher' %}Панель управления{% else %}Личный кабинет{% endif %}</a>
+                            {% endif %}
+                            <a href="{% url 'settings' %}">Настройки</a>
+                            <a href="{% url 'site_logout' %}">Выход</a>
+                        </div>
                     </div>
+                    {% else %}
+                    <a href="{% url 'site_login' %}" class="btn btn-header">Войти</a>
+                    <a href="{% url 'site_register' %}" class="btn btn-header btn-header-primary">Регистрация</a>
+                    {% endif %}
                 </div>
-                {% else %}
-                <a href="{% url 'site_login' %}" class="btn btn-header">Войти</a>
-                <a href="{% url 'site_register' %}" class="btn btn-header btn-header-primary">Регистрация</a>
-                {% endif %}
             </div>
         </div>
     </header>

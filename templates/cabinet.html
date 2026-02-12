@@ -13,14 +13,87 @@
     {% if role == 'student' %}
     <p class="cabinet-subtitle">Здесь вы можете посмотреть свои заявки или отправить новую</p>
     {% endif %}
+    {% if role == 'teacher' %}
+    <p class="cabinet-subtitle">Здесь отображаются заявки студентов, адресованные вам. Нажмите «Детали» для просмотра и изменения статуса.</p>
+    {% endif %}
     <div class="cabinet-content">
         {% if role == 'teacher' %}
-        <section class="cabinet-card">
-            <p class="cabinet-greeting">
-                Здравствуйте, {{ user.get_full_name|default:user.get_username }}.
-            </p>
-            <p class="page-lead">Здесь вы можете управлять заявками. Функции панели будут добавлены позже.</p>
+        <section class="cabinet-card cabinet-requests-card">
+            <h2 class="cabinet-card-title">Входящие заявки</h2>
+            {% if received_requests %}
+            <div class="cabinet-requests-wrap">
+                <table class="cabinet-requests-table">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Студент</th>
+                            <th>Тема</th>
+                            <th>Статус</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in received_requests %}
+                        <tr>
+                            <td>{{ req.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>{{ req.sender.get_full_name|default:req.sender.get_username }}</td>
+                            <td>{{ req.topic|default:"—" }}</td>
+                            <td><span class="cabinet-status cabinet-status-{{ req.status }}">{{ req.get_status_display }}</span></td>
+                            <td><a href="{% url 'cabinet' %}?detail={{ req.id }}" class="btn btn-primary btn-small">Детали</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="cabinet-empty">Заявок пока нет.</p>
+            {% endif %}
         </section>
+
+        <div class="cabinet-modal" id="cabinet-detail-modal" role="dialog" aria-labelledby="cabinet-detail-modal-title" aria-modal="true"{% if detail_request %} data-open-on-load="true"{% endif %}>
+            <div class="cabinet-modal-backdrop" id="cabinet-detail-backdrop"></div>
+            <div class="cabinet-modal-box cabinet-modal-box_wide">
+                <div class="cabinet-modal-header">
+                    <h2 class="cabinet-modal-title" id="cabinet-detail-modal-title">Детали заявки</h2>
+                    <a href="{% url 'cabinet' %}" class="cabinet-modal-close" aria-label="Закрыть">&times;</a>
+                </div>
+                <div class="cabinet-modal-body">
+                    {% if detail_request %}
+                    <dl class="cabinet-detail-list">
+                        <dt>Дата отправки</dt>
+                        <dd>{{ detail_request.created_at|date:"d.m.Y H:i" }}</dd>
+                        <dt>Студент</dt>
+                        <dd>{{ detail_request.sender.get_full_name|default:detail_request.sender.get_username }} ({{ detail_request.sender.get_username }})</dd>
+                        <dt>Тема</dt>
+                        <dd>{{ detail_request.topic|default:"—" }}</dd>
+                        <dt>Сообщение</dt>
+                        <dd class="cabinet-detail-message">{{ detail_request.message }}</dd>
+                        <dt>Текущий статус</dt>
+                        <dd><span class="cabinet-status cabinet-status-{{ detail_request.status }}">{{ detail_request.get_status_display }}</span></dd>
+                        {% if detail_request.status_changed_at %}
+                        <dt>Дата изменения статуса</dt>
+                        <dd>{{ detail_request.status_changed_at|date:"d.m.Y H:i" }}</dd>
+                        {% endif %}
+                    </dl>
+                    <form method="post" action="{% url 'cabinet' %}" class="cabinet-status-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="request_id" value="{{ detail_request.id }}">
+                        <div class="form-row">
+                            <label class="form-label" for="id_new_status">Изменить статус</label>
+                            <select name="new_status" id="id_new_status" class="form-input form-select">
+                                {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if detail_request.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Сохранить статус</button>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
         {% else %}
         <section class="cabinet-card cabinet-requests-card">
             <h2 class="cabinet-card-title">Мои заявки</h2>
@@ -118,6 +191,27 @@
     if (backdrop) backdrop.addEventListener('click', closeModal);
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+    });
+})();
+</script>
+{% endif %}
+{% if role == 'teacher' %}
+<script>
+(function() {
+    var modal = document.getElementById('cabinet-detail-modal');
+    var backdrop = document.getElementById('cabinet-detail-backdrop');
+    var cabinetUrl = "{% url 'cabinet' %}";
+    if (!modal) return;
+    if (modal.getAttribute('data-open-on-load') === 'true') {
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDetailModal() {
+        window.location = cabinetUrl;
+    }
+    if (backdrop) backdrop.addEventListener('click', closeDetailModal);
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeDetailModal();
     });
 })();
 </script>

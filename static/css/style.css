@@ -1132,6 +1132,10 @@ body.register-fullpage {
     border: 1px solid var(--color-border);
 }
 
+.cabinet-modal-box_wide {
+    max-width: 560px;
+}
+
 .cabinet-modal-header {
     display: flex;
     align-items: center;
@@ -1163,6 +1167,54 @@ body.register-fullpage {
 .cabinet-modal-close:hover {
     color: var(--color-text);
     background: var(--color-bg);
+}
+
+a.cabinet-modal-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.cabinet-detail-list {
+    margin: 0 0 1.5rem 0;
+}
+
+.cabinet-detail-list dt {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-top: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.cabinet-detail-list dt:first-child {
+    margin-top: 0;
+}
+
+.cabinet-detail-list dd {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-text);
+    line-height: 1.5;
+}
+
+.cabinet-detail-message {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.cabinet-status-form .form-row {
+    margin-bottom: 1rem;
+}
+
+.cabinet-status-form .form-actions {
+    margin-top: 1rem;
+}
+
+.btn-small {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
 }
 
 .cabinet-modal-body {

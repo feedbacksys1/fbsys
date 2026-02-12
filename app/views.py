@@ -182,6 +182,8 @@ def cabinet_view(request):
     page_title = 'Панель управления' if role == Role.TEACHER else 'Личный кабинет'
 
     request_form = None
+    detail_request = None
+
     if role == Role.STUDENT:
         request_form = StudentRequestForm(
             request.POST if request.method == 'POST' else None
@@ -196,13 +198,41 @@ def cabinet_view(request):
             messages.success(request, 'Заявка успешно отправлена.')
             return redirect('cabinet')
 
+    if role == Role.TEACHER:
+        if request.method == 'POST':
+            request_id = request.POST.get('request_id')
+            new_status = request.POST.get('new_status')
+            if request_id and new_status and new_status in dict(FeedbackStatus.choices):
+                try:
+                    req = StudentRequest.objects.get(pk=int(request_id), recipient=request.user)
+                    req.status = new_status
+                    req.status_changed_at = timezone.now()
+                    req.save()
+                    messages.success(request, 'Статус заявки обновлён.')
+                    return redirect('cabinet')
+                except (StudentRequest.DoesNotExist, ValueError):
+                    pass
+        detail_id = request.GET.get('detail')
+        if detail_id:
+            try:
+                detail_request = StudentRequest.objects.get(
+                    pk=int(detail_id),
+                    recipient=request.user,
+                )
+            except (StudentRequest.DoesNotExist, ValueError):
+                pass
+
     context = {
         'page_title': page_title,
         'role': role,
         'request_form': request_form,
+        'detail_request': detail_request,
+        'status_choices': list(FeedbackStatus.choices),
     }
     if role == Role.STUDENT:
         context['sent_requests'] = StudentRequest.objects.filter(sender=request.user).select_related('recipient')
+    if role == Role.TEACHER:
+        context['received_requests'] = StudentRequest.objects.filter(recipient=request.user).select_related('sender')
     return render(request, 'cabinet.html', context)
 
 

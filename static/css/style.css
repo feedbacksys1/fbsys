@@ -301,6 +301,105 @@ body.register-fullpage {
     max-width: 200px;
 }
 
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+}
+
+.modal-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-dialog {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow: auto;
+}
+
+.modal-content {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+}
+
+.modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: var(--color-text);
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+}
+
+.modal-body {
+    padding-right: 2rem;
+}
+
+.modal-details-list {
+    margin: 0 0 1.25rem;
+}
+
+.modal-details-list dt {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.modal-details-list dt:first-child {
+    margin-top: 0;
+}
+
+.modal-details-list dd {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-text);
+}
+
+.modal-details-list a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.modal-details-list a:hover {
+    text-decoration: underline;
+}
+
+.modal-message {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
 .admin-form-actions {
     margin-top: 0.5rem;
 }

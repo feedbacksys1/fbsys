@@ -5,58 +5,117 @@
 {% block content %}
 <div class="admin-content admin-content_full">
     <h1 class="admin-page-title">Просмотр форм обратной связи</h1>
-    <p class="admin-page-lead">Список обращений. Выберите новый статус и нажмите «Сохранить».</p>
-    <form method="post" action="{% url 'admin_feedback_list' %}" class="admin-users-form">
-        {% csrf_token %}
-        <div class="admin-table-wrap">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Дата отправки</th>
-                        <th>Имя</th>
-                        <th>Почта</th>
-                        <th>Телефон</th>
-                        <th>Тема</th>
-                        <th>Сообщение</th>
-                        <th>Статус</th>
-                        <th>Дата изменения статуса</th>
-                        <th>Изменил статус</th>
-                        <th>Изменить статус</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for fb in feedback_list %}
-                    <tr>
-                        <td>{{ fb.created_at|date:"d.m.Y H:i" }}</td>
-                        <td>{{ fb.name }}</td>
-                        <td>{{ fb.email }}</td>
-                        <td>{{ fb.phone|default:"—" }}</td>
-                        <td>{{ fb.topic|default:"—" }}</td>
-                        <td class="admin-feedback-message">{{ fb.message|truncatewords:15 }}</td>
-                        <td>{{ fb.get_status_display }}</td>
-                        <td>{% if fb.status_changed_at %}{{ fb.status_changed_at|date:"d.m.Y H:i" }}{% else %}—{% endif %}</td>
-                        <td>{% if fb.status_changed_by %}{{ fb.status_changed_by.get_username }}{% else %}—{% endif %}</td>
-                        <td>
-                            <select name="status_{{ fb.pk }}" class="form-input admin-role-select">
-                                {% for value, label in status_choices %}
-                                <option value="{{ value }}" {% if fb.status == value %}selected{% endif %}>{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="10">Обращений пока нет.</td>
-                    </tr>
+    <p class="admin-page-lead">Список обращений. Нажмите «Детали» для просмотра и изменения статуса.</p>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Дата отправки</th>
+                    <th>Тема</th>
+                    <th>Статус</th>
+                    <th>Дата изменения статуса</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fb in feedback_list %}
+                <tr>
+                    <td>{{ fb.created_at|date:"d.m.Y H:i" }}</td>
+                    <td>{{ fb.topic|default:"—" }}</td>
+                    <td>{{ fb.get_status_display }}</td>
+                    <td>{% if fb.status_changed_at %}{{ fb.status_changed_at|date:"d.m.Y H:i" }}{% else %}—{% endif %}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-details" data-details-id="{{ fb.pk }}">Детали</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">Обращений пока нет.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% for fb in feedback_list %}
+    <div class="feedback-details-source" id="details-{{ fb.pk }}" data-fb-id="{{ fb.pk }}" style="display:none;">
+        <div class="modal-details">
+            <dl class="modal-details-list">
+                <dt>Дата отправки</dt>
+                <dd>{{ fb.created_at|date:"d.m.Y H:i" }}</dd>
+                <dt>Имя</dt>
+                <dd>{{ fb.name }}</dd>
+                <dt>Почта</dt>
+                <dd><a href="mailto:{{ fb.email }}">{{ fb.email }}</a></dd>
+                <dt>Телефон</dt>
+                <dd>{% if fb.phone %}<a href="tel:{{ fb.phone }}">{{ fb.phone }}</a>{% else %}—{% endif %}</dd>
+                <dt>Тема</dt>
+                <dd>{{ fb.topic|default:"—" }}</dd>
+                <dt>Сообщение</dt>
+                <dd class="modal-message">{{ fb.message }}</dd>
+            </dl>
+            <form method="post" action="{% url 'admin_feedback_list' %}" class="modal-status-form">
+                {% csrf_token %}
+                <label class="form-label" for="modal-status-{{ fb.pk }}">Статус</label>
+                <select name="status_{{ fb.pk }}" id="modal-status-{{ fb.pk }}" class="form-input admin-role-select">
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if fb.status == value %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
-                </tbody>
-            </table>
+                </select>
+                <div class="admin-form-actions" style="margin-top:0.75rem;">
+                    <button type="submit" class="btn btn-primary">Сохранить статус</button>
+                </div>
+            </form>
         </div>
-        {% if feedback_list %}
-        <div class="admin-form-actions">
-            <button type="submit" class="btn btn-primary">Сохранить</button>
-        </div>
-        {% endif %}
-    </form>
+    </div>
+    {% endfor %}
 </div>
+
+<div class="modal-overlay" id="feedback-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <button type="button" class="modal-close" aria-label="Закрыть">&times;</button>
+            <h2 class="modal-title">Обращение</h2>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var modal = document.getElementById('feedback-modal');
+    var modalBody = modal && modal.querySelector('.modal-body');
+    var btnClose = modal && modal.querySelector('.modal-close');
+    if (!modal || !modalBody) return;
+    function openModal(detailsId) {
+        var source = document.getElementById('details-' + detailsId);
+        if (!source) return;
+        modalBody.innerHTML = source.innerHTML;
+        modal.setAttribute('aria-hidden', 'false');
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+        modal.setAttribute('aria-hidden', 'true');
+        modal.classList.remove('is-open');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.btn-details');
+        if (btn && btn.dataset.detailsId) {
+            e.preventDefault();
+            openModal(btn.dataset.detailsId);
+        }
+        if (e.target === modal || e.target.classList.contains('modal-close')) {
+            e.preventDefault();
+            closeModal();
+        }
+    });
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+    });
+})();
+</script>
 {% endblock %}

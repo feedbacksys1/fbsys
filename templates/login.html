@@ -7,14 +7,28 @@
     <div class="auth-card">
         <h1 class="auth-title">Вход</h1>
         <p class="auth-lead">Войдите в личный кабинет</p>
-        <form class="auth-form" method="post" action="#">
+        <form class="auth-form" method="post" action="{% url 'site_login' %}">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+            <ul class="form-errors form-errors-general">
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
             <div class="form-row">
                 <label class="form-label" for="id_username">Email или логин</label>
-                <input type="text" id="id_username" name="username" class="form-input" placeholder="Введите email или логин" required autocomplete="username">
+                {{ form.username }}
+                {% if form.username.errors %}
+                <ul class="form-errors">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
             </div>
             <div class="form-row">
                 <label class="form-label" for="id_password">Пароль</label>
-                <input type="password" id="id_password" name="password" class="form-input" placeholder="Введите пароль" required autocomplete="current-password">
+                {{ form.password }}
+                {% if form.password.errors %}
+                <ul class="form-errors">{% for e in form.password.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary btn-block">Войти</button>

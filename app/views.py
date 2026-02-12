@@ -1,7 +1,10 @@
 """
 Представления основного приложения.
 """
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+
+from .forms import RegistrationForm, LoginForm
 
 
 def landing(request):
@@ -27,13 +30,32 @@ def feedback(request):
 
 def login_view(request):
     """
-    Страница входа (макет, без подключения к БД).
+    Страница входа.
     """
-    return render(request, 'login.html')
+    if request.user.is_authenticated:
+        return redirect('landing')
+    if request.method == 'POST':
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('landing')
+    else:
+        form = LoginForm(request)
+    return render(request, 'login.html', {'form': form})
 
 
 def register(request):
     """
-    Страница регистрации (макет, без подключения к БД).
+    Страница регистрации.
     """
-    return render(request, 'register.html')
+    if request.user.is_authenticated:
+        return redirect('landing')
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('site_login')
+    else:
+        form = RegistrationForm()
+    return render(request, 'register.html', {'form': form})

@@ -37,6 +37,13 @@ def about(request):
     return render(request, 'about.html')
 
 
+def advantages(request):
+    """
+    Статичная страница «Преимущества».
+    """
+    return render(request, 'advantages.html')
+
+
 def faq(request):
     """
     Статичная страница «Вопросы и ответы».

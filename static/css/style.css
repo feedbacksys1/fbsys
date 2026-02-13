@@ -602,6 +602,59 @@ body.register-fullpage {
     overflow: hidden;
 }
 
+/* Хлебные крошки */
+.breadcrumb {
+    margin-bottom: 1rem;
+    padding: 0 0 0.5rem;
+}
+
+.site-main:has(.landing-page) .breadcrumb,
+.site-main:has(.register-split) .breadcrumb {
+    padding: 0.75rem 1.5rem 0.5rem;
+}
+
+.breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+}
+
+.breadcrumb-link {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.breadcrumb-link:hover {
+    text-decoration: underline;
+    color: var(--color-primary-light);
+}
+
+.breadcrumb-current {
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.breadcrumb-sep {
+    color: var(--color-text-muted);
+    user-select: none;
+}
+
+.admin-main .breadcrumb {
+    padding: 1rem 1.5rem 0.5rem 0;
+    margin-bottom: 0.5rem;
+}
+
 .site-footer {
     background: var(--color-surface);
     border-top: 1px solid var(--color-border);

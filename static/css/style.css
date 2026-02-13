@@ -165,6 +165,73 @@ body.register-fullpage {
     color: var(--color-primary);
 }
 
+/* Выпадающее меню «Инструкции» в навбаре (по наведению) */
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-trigger {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.nav-dropdown-trigger::after {
+    content: '\25BC';
+    font-size: 0.6em;
+    margin-left: 0.5em;
+    opacity: 0.85;
+    vertical-align: 0.1em;
+}
+
+.nav-dropdown:hover .nav-dropdown-trigger {
+    color: var(--color-accent);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0;
+    min-width: 220px;
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 0;
+    display: none;
+    z-index: 101;
+}
+
+/* Невидимый «мостик» между триггером и меню — курсор не теряет hover при движении вниз */
+.nav-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0;
+    right: 0;
+    height: 8px;
+}
+
+.nav-dropdown:hover .nav-dropdown-menu {
+    display: block;
+}
+
+.nav-dropdown-menu a {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.nav-dropdown-menu a:hover {
+    background: var(--color-bg);
+    color: var(--color-primary);
+}
+
 .admin-body {
     display: flex;
     flex-direction: column;

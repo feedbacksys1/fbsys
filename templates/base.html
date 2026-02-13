@@ -15,11 +15,21 @@
     <header class="site-header">
         <div class="header-inner">
             <nav class="header-nav header-nav-left">
-                <a href="{% url 'about' %}">О нас</a>
-                <a href="{% url 'advantages' %}">Преимущества</a>
-                <a href="{% url 'faq' %}">FAQ</a>
-                <a href="{% url 'request_rules' %}">Правила подачи заявок</a>
-                <a href="{% url 'student_guide' %}">Инструкция для студентов</a>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">О сервисе</span>
+                    <div class="nav-dropdown-menu" aria-hidden="true">
+                        <a href="{% url 'about' %}">О нас</a>
+                        <a href="{% url 'advantages' %}">Преимущества</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <span class="nav-dropdown-trigger">Инструкции</span>
+                    <div class="nav-dropdown-menu" aria-hidden="true">
+                        <a href="{% url 'student_guide' %}">Инструкции для студентов</a>
+                        <a href="{% url 'request_rules' %}">Правила подачи заявок</a>
+                        <a href="{% url 'faq' %}">FAQ</a>
+                    </div>
+                </div>
                 <a href="{% url 'feedback' %}">Обратная связь</a>
                 <a href="{% url 'contacts' %}">Контакты</a>
             </nav>

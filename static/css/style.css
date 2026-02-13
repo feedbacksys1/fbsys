@@ -578,14 +578,17 @@ body.register-fullpage {
 
 .hero-icon {
     flex-shrink: 0;
-    width: 200px;
-    height: 200px;
+    align-self: center;
+    width: 340px;
+    height: 340px;
     color: rgba(255, 255, 255, 0.95);
 }
 
-.hero-icon svg {
+.hero-icon svg,
+.hero-icon .hero-img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
 }
 
 .about {
@@ -1757,8 +1760,8 @@ select.form-select {
     }
 
     .hero-icon {
-        width: 140px;
-        height: 140px;
+        width: 180px;
+        height: 180px;
     }
 }
 

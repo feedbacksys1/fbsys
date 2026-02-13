@@ -2,6 +2,7 @@
 Представления основного приложения.
 """
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
@@ -286,8 +287,14 @@ def admin_statistics(request):
     """
     Просмотр статистики по заявкам по каждому преподавателю (только для staff).
     """
-    teachers = User.objects.filter(profile__role=Role.TEACHER).order_by('last_name', 'first_name')
     search_q = request.GET.get('q', '').strip()
+    stats = _get_teacher_stats(search_q)
+    return render(request, 'admin_statistics.html', {'stats': stats, 'search_q': search_q})
+
+
+def _get_teacher_stats(search_q=None):
+    """Возвращает список словарей со статистикой по преподавателям (для страницы и экспорта)."""
+    teachers = User.objects.filter(profile__role=Role.TEACHER).order_by('last_name', 'first_name')
     if search_q:
         teachers = teachers.filter(
             Q(username__icontains=search_q)
@@ -309,7 +316,50 @@ def admin_statistics(request):
             'reviewed': reviewed,
             'awaiting': awaiting,
         })
-    return render(request, 'admin_statistics.html', {'stats': stats, 'search_q': search_q})
+    return stats
+
+
+@login_required
+@user_passes_test(_is_staff, login_url='landing')
+def admin_statistics_export(request):
+    """
+    Скачивание статистики по преподавателям в виде Excel (только для staff).
+    Учитывается текущий поисковый запрос (параметр q).
+    """
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, Alignment
+    from io import BytesIO
+
+    search_q = request.GET.get('q', '').strip()
+    stats = _get_teacher_stats(search_q)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Статистика'
+
+    headers = ['Преподаватель', 'Всего заявок', 'Рассмотрено', 'Ожидают рассмотрения']
+    for col, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col, value=header)
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center')
+
+    for row, item in enumerate(stats, 2):
+        teacher_name = item['teacher'].get_full_name() or item['teacher'].get_username()
+        ws.cell(row=row, column=1, value=teacher_name)
+        ws.cell(row=row, column=2, value=item['total'])
+        ws.cell(row=row, column=3, value=item['reviewed'])
+        ws.cell(row=row, column=4, value=item['awaiting'])
+
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="statistics.xlsx"'
+    return response
 
 
 @login_required

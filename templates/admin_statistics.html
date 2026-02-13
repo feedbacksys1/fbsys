@@ -9,6 +9,7 @@
     <form method="get" action="{% url 'admin_statistics' %}" class="admin-search-form admin-search-form_full">
         <input type="search" name="q" value="{{ search_q }}" class="form-input admin-search-input" placeholder="Поиск по имени, фамилии, логину или email" aria-label="Поиск по преподавателю">
         <button type="submit" class="btn btn-primary">Найти</button>
+        <a href="{% url 'admin_statistics_export' %}{% if search_q %}?q={{ search_q|urlencode }}{% endif %}" class="btn btn-primary">Скачать Excel</a>
     </form>
     <div class="admin-table-wrap">
         <table class="admin-table">

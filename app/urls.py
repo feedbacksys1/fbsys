@@ -34,6 +34,7 @@ urlpatterns = [
     path('admin-panel/', views.admin_panel, name='admin_panel'),
     path('admin-panel/users/', views.admin_users, name='admin_users'),
     path('admin-panel/statistics/', views.admin_statistics, name='admin_statistics'),
+    path('admin-panel/statistics/export/', views.admin_statistics_export, name='admin_statistics_export'),
     path('admin-panel/feedback/', views.admin_feedback_list, name='admin_feedback_list'),
     path('admin/', admin.site.urls),
 ]

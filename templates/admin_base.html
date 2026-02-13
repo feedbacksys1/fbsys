@@ -16,9 +16,9 @@
         <aside class="admin-sidebar">
             <a href="{% url 'landing' %}" class="admin-sidebar-back">← На сайт</a>
             <nav class="admin-sidebar-nav">
-                <a href="{% url 'admin_users' %}" class="admin-sidebar-link">Управление пользователями</a>
-                <a href="{% url 'admin_feedback_list' %}" class="admin-sidebar-link">Просмотр форм обратной связи</a>
-                <a href="{% url 'admin_statistics' %}" class="admin-sidebar-link">Просмотр статистики</a>
+                <a href="{% url 'admin_statistics' %}" class="admin-sidebar-link {% if request.resolver_match.url_name == 'admin_statistics' %}active{% endif %}">Просмотр статистики</a>
+                <a href="{% url 'admin_feedback_list' %}" class="admin-sidebar-link {% if request.resolver_match.url_name == 'admin_feedback_list' %}active{% endif %}">Просмотр форм обратной связи</a>
+                <a href="{% url 'admin_users' %}" class="admin-sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">Управление пользователями</a>
             </nav>
         </aside>
         <main class="admin-main">

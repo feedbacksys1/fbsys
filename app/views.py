@@ -275,9 +275,9 @@ def cabinet_view(request):
 @user_passes_test(_is_staff, login_url='landing')
 def admin_panel(request):
     """
-    Кастомная админ-панель сервиса (только для staff).
+    Редирект на страницу «Просмотр статистики» (стартовая страница админ-панели).
     """
-    return render(request, 'admin_panel.html')
+    return redirect('admin_statistics')
 
 
 @login_required

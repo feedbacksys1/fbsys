@@ -33,6 +33,7 @@ urlpatterns = [
     path('cabinet/', views.cabinet_view, name='cabinet'),
     path('admin-panel/', views.admin_panel, name='admin_panel'),
     path('admin-panel/users/', views.admin_users, name='admin_users'),
+    path('admin-panel/statistics/', views.admin_statistics, name='admin_statistics'),
     path('admin-panel/feedback/', views.admin_feedback_list, name='admin_feedback_list'),
     path('admin/', admin.site.urls),
 ]

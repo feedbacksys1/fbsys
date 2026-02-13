@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Админ-панель{% endblock %} — Московский университет имени С.Ю. Витте</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,6 +18,7 @@
             <nav class="admin-sidebar-nav">
                 <a href="{% url 'admin_users' %}" class="admin-sidebar-link">Управление пользователями</a>
                 <a href="{% url 'admin_feedback_list' %}" class="admin-sidebar-link">Просмотр форм обратной связи</a>
+                <a href="{% url 'admin_statistics' %}" class="admin-sidebar-link">Просмотр статистики</a>
             </nav>
         </aside>
         <main class="admin-main">

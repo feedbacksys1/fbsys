@@ -1,0 +1,36 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Просмотр статистики{% endblock %}
+
+{% block content %}
+<div class="admin-content admin-content_full">
+    <h1 class="admin-page-title">Просмотр статистики</h1>
+    <p class="admin-page-lead">Статистика заявок по каждому преподавателю: сколько поступило, рассмотрено и ожидает рассмотрения.</p>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Преподаватель</th>
+                    <th>Всего заявок</th>
+                    <th>Рассмотрено</th>
+                    <th>Ожидают рассмотрения</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in stats %}
+                <tr>
+                    <td>{{ item.teacher.get_full_name|default:item.teacher.get_username }}</td>
+                    <td>{{ item.total }}</td>
+                    <td>{{ item.reviewed }}</td>
+                    <td>{{ item.awaiting }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Нет преподавателей в системе.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -282,6 +282,30 @@ def admin_panel(request):
 
 @login_required
 @user_passes_test(_is_staff, login_url='landing')
+def admin_statistics(request):
+    """
+    Просмотр статистики по заявкам по каждому преподавателю (только для staff).
+    """
+    teachers = User.objects.filter(profile__role=Role.TEACHER).order_by('last_name', 'first_name')
+    stats = []
+    for t in teachers:
+        total = StudentRequest.objects.filter(recipient=t).count()
+        reviewed = StudentRequest.objects.filter(recipient=t, status=FeedbackStatus.REVIEWED).count()
+        awaiting = StudentRequest.objects.filter(
+            recipient=t,
+            status__in=[FeedbackStatus.NEW, FeedbackStatus.IN_PROGRESS],
+        ).count()
+        stats.append({
+            'teacher': t,
+            'total': total,
+            'reviewed': reviewed,
+            'awaiting': awaiting,
+        })
+    return render(request, 'admin_statistics.html', {'stats': stats})
+
+
+@login_required
+@user_passes_test(_is_staff, login_url='landing')
 def admin_users(request):
     """
     Управление пользователями: список и смена роли (только для staff).

@@ -6,6 +6,10 @@
 <div class="admin-content admin-content_full">
     <h1 class="admin-page-title">Просмотр статистики</h1>
     <p class="admin-page-lead">Статистика заявок по каждому преподавателю: сколько поступило, рассмотрено и ожидает рассмотрения.</p>
+    <form method="get" action="{% url 'admin_statistics' %}" class="admin-search-form admin-search-form_full">
+        <input type="search" name="q" value="{{ search_q }}" class="form-input admin-search-input" placeholder="Поиск по имени, фамилии, логину или email" aria-label="Поиск по преподавателю">
+        <button type="submit" class="btn btn-primary">Найти</button>
+    </form>
     <div class="admin-table-wrap">
         <table class="admin-table">
             <thead>

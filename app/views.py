@@ -287,6 +287,14 @@ def admin_statistics(request):
     Просмотр статистики по заявкам по каждому преподавателю (только для staff).
     """
     teachers = User.objects.filter(profile__role=Role.TEACHER).order_by('last_name', 'first_name')
+    search_q = request.GET.get('q', '').strip()
+    if search_q:
+        teachers = teachers.filter(
+            Q(username__icontains=search_q)
+            | Q(first_name__icontains=search_q)
+            | Q(last_name__icontains=search_q)
+            | Q(email__icontains=search_q),
+        )
     stats = []
     for t in teachers:
         total = StudentRequest.objects.filter(recipient=t).count()
@@ -301,7 +309,7 @@ def admin_statistics(request):
             'reviewed': reviewed,
             'awaiting': awaiting,
         })
-    return render(request, 'admin_statistics.html', {'stats': stats})
+    return render(request, 'admin_statistics.html', {'stats': stats, 'search_q': search_q})
 
 
 @login_required

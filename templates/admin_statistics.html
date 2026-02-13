@@ -5,9 +5,9 @@
 {% block content %}
 <div class="admin-content admin-content_full">
     <h1 class="admin-page-title">Просмотр статистики</h1>
-    <p class="admin-page-lead">Статистика заявок по каждому преподавателю: сколько поступило, рассмотрено и ожидает рассмотрения.</p>
+    <p class="admin-page-lead">Статистика заявок по каждому куратору: сколько поступило, рассмотрено и ожидает рассмотрения.</p>
     <form method="get" action="{% url 'admin_statistics' %}" class="admin-search-form admin-search-form_full">
-        <input type="search" name="q" value="{{ search_q }}" class="form-input admin-search-input" placeholder="Поиск по имени, фамилии, логину или email" aria-label="Поиск по преподавателю">
+        <input type="search" name="q" value="{{ search_q }}" class="form-input admin-search-input" placeholder="Поиск по имени, фамилии, логину или email" aria-label="Поиск по куратору">
         <button type="submit" class="btn btn-primary">Найти</button>
         <a href="{% url 'admin_statistics_export' %}{% if search_q %}?q={{ search_q|urlencode }}{% endif %}" class="btn btn-primary">Скачать Excel</a>
     </form>
@@ -15,7 +15,7 @@
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Преподаватель</th>
+                    <th>Куратор</th>
                     <th>Всего заявок</th>
                     <th>Рассмотрено</th>
                     <th>Ожидают рассмотрения</th>
@@ -31,7 +31,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4">Нет преподавателей в системе.</td>
+                    <td colspan="4">Нет кураторов в системе.</td>
                 </tr>
                 {% endfor %}
             </tbody>

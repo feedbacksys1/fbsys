@@ -66,6 +66,16 @@
                 </div>
                 <div class="cabinet-modal-body">
                     {% if detail_request %}
+                    {% if detail_request.attachments.exists %}
+                    <div class="cabinet-detail-attachments-block cabinet-detail-attachments-block_top">
+                        <span class="cabinet-detail-attachments-label">Файлы к заявке ({{ detail_request.attachments.count }})</span>
+                        <div class="cabinet-detail-attachments">
+                            {% for att in detail_request.attachments.all %}
+                            <a href="{% url 'download_request_attachment' att.id %}" class="cabinet-attachment-link">{{ att.original_name }}</a>{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                     <dl class="cabinet-detail-list">
                         <dt>Дата отправки</dt>
                         <dd>{{ detail_request.created_at|date:"d.m.Y H:i" }}</dd>
@@ -98,6 +108,35 @@
                             <button type="submit" class="btn btn-primary">Сохранить статус</button>
                         </div>
                     </form>
+                    <section class="cabinet-thread">
+                        <h3 class="cabinet-thread-title">Переписка</h3>
+                        {% if thread_messages %}
+                        <ul class="cabinet-thread-list">
+                            {% for msg in thread_messages %}
+                            <li class="cabinet-thread-item {% if msg.author == request.user %}cabinet-thread-item_own{% else %}cabinet-thread-item_other{% endif %}">
+                                <span class="cabinet-thread-meta">{{ msg.author.get_full_name|default:msg.author.get_username }}, {{ msg.created_at|date:"d.m.Y H:i" }}</span>
+                                <p class="cabinet-thread-body">{{ msg.body }}</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p class="cabinet-thread-empty">Сообщений пока нет. Напишите ответ студенту — после этого откроется переписка.</p>
+                        {% endif %}
+                        <form method="post" action="{% url 'cabinet' %}?detail={{ detail_request.id }}{% if filter_status %}&status={{ filter_status }}{% endif %}" class="cabinet-reply-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="request_id" value="{{ detail_request.id }}">
+                            <div class="form-row">
+                                <label class="form-label" for="id_reply_body">Ответ студенту</label>
+                                <textarea name="reply_body" id="id_reply_body" class="form-input form-textarea" rows="4" placeholder="Введите текст ответа..." required></textarea>
+                                {% if reply_form and reply_form.body.errors %}
+                                <ul class="form-errors">{% for e in reply_form.body.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                                {% endif %}
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Отправить ответ</button>
+                            </div>
+                        </form>
+                    </section>
                     {% endif %}
                 </div>
             </div>
@@ -118,9 +157,10 @@
                     <thead>
                         <tr>
                             <th>Дата</th>
-                            <th>Преподаватель</th>
+                            <th>Куратор</th>
                             <th>Тема</th>
                             <th>Статус</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -130,6 +170,7 @@
                             <td>{{ req.recipient.get_full_name|default:req.recipient.get_username }}</td>
                             <td>{{ req.topic|default:"—" }}</td>
                             <td><span class="cabinet-status cabinet-status-{{ req.status }}">{{ req.get_status_display }}</span></td>
+                            <td><a href="{% url 'cabinet' %}?detail={{ req.id }}{% if filter_status %}&status={{ filter_status }}{% endif %}" class="btn btn-primary btn-small">Переписка</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -140,18 +181,85 @@
             {% endif %}
         </section>
 
+        <div class="cabinet-modal" id="cabinet-student-detail-modal" role="dialog" aria-labelledby="cabinet-student-detail-title" aria-modal="true"{% if detail_request %} data-open-on-load="true"{% endif %}>
+            <div class="cabinet-modal-backdrop" id="cabinet-student-detail-backdrop"></div>
+            <div class="cabinet-modal-box cabinet-modal-box_wide">
+                <div class="cabinet-modal-header">
+                    <h2 class="cabinet-modal-title" id="cabinet-student-detail-title">Заявка куратору</h2>
+                    <a href="{% url 'cabinet' %}{% if filter_status %}?status={{ filter_status }}{% endif %}" class="cabinet-modal-close" aria-label="Закрыть">&times;</a>
+                </div>
+                <div class="cabinet-modal-body">
+                    {% if detail_request %}
+                    <dl class="cabinet-detail-list">
+                        <dt>Дата отправки</dt>
+                        <dd>{{ detail_request.created_at|date:"d.m.Y H:i" }}</dd>
+                        <dt>Куратор</dt>
+                        <dd>{{ detail_request.recipient.get_full_name|default:detail_request.recipient.get_username }}</dd>
+                        <dt>Тема</dt>
+                        <dd>{{ detail_request.topic|default:"—" }}</dd>
+                        <dt>Сообщение</dt>
+                        <dd class="cabinet-detail-message">{{ detail_request.message }}</dd>
+                        {% if detail_request.attachments.exists %}
+                        <dt>Вложения</dt>
+                        <dd class="cabinet-detail-attachments">
+                            {% for att in detail_request.attachments.all %}
+                            <a href="{% url 'download_request_attachment' att.id %}" class="cabinet-attachment-link">{{ att.original_name }}</a>{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </dd>
+                        {% endif %}
+                        <dt>Статус</dt>
+                        <dd><span class="cabinet-status cabinet-status-{{ detail_request.status }}">{{ detail_request.get_status_display }}</span></dd>
+                    </dl>
+                    <section class="cabinet-thread">
+                        <h3 class="cabinet-thread-title">Переписка</h3>
+                        {% if detail_request.thread_opened_at %}
+                            {% if thread_messages %}
+                            <ul class="cabinet-thread-list">
+                                {% for msg in thread_messages %}
+                                <li class="cabinet-thread-item {% if msg.author == request.user %}cabinet-thread-item_own{% else %}cabinet-thread-item_other{% endif %}">
+                                    <span class="cabinet-thread-meta">{{ msg.author.get_full_name|default:msg.author.get_username }}, {{ msg.created_at|date:"d.m.Y H:i" }}</span>
+                                    <p class="cabinet-thread-body">{{ msg.body }}</p>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="cabinet-thread-empty">Куратор открыл переписку. Вы можете написать ответ ниже.</p>
+                            {% endif %}
+                            <form method="post" action="{% url 'cabinet' %}?detail={{ detail_request.id }}{% if filter_status %}&status={{ filter_status }}{% endif %}" class="cabinet-reply-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="request_id" value="{{ detail_request.id }}">
+                                <div class="form-row">
+                                    <label class="form-label" for="id_reply_body_student">Ответ куратору</label>
+                                    <textarea name="reply_body" id="id_reply_body_student" class="form-input form-textarea" rows="4" placeholder="Введите текст ответа..." required></textarea>
+                                    {% if reply_form and reply_form.body.errors %}
+                                    <ul class="form-errors">{% for e in reply_form.body.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                                    {% endif %}
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Отправить ответ</button>
+                                </div>
+                            </form>
+                        {% else %}
+                        <p class="cabinet-thread-empty">Куратор ещё не ответил на заявку. Переписка появится после его первого сообщения.</p>
+                        {% endif %}
+                    </section>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
         <div class="cabinet-modal" id="cabinet-request-modal" role="dialog" aria-labelledby="cabinet-modal-title" aria-modal="true"{% if request_form and request_form.errors %} data-open-on-load="true"{% endif %}>
             <div class="cabinet-modal-backdrop" id="cabinet-modal-backdrop"></div>
             <div class="cabinet-modal-box">
                 <div class="cabinet-modal-header">
-                    <h2 class="cabinet-modal-title" id="cabinet-modal-title">Заявка преподавателю</h2>
+                    <h2 class="cabinet-modal-title" id="cabinet-modal-title">Заявка куратору</h2>
                     <button type="button" class="cabinet-modal-close" id="cabinet-modal-close" aria-label="Закрыть">&times;</button>
                 </div>
                 <div class="cabinet-modal-body">
-                    <form class="cabinet-request-form" method="post" action="{% url 'cabinet' %}">
+                    <form class="cabinet-request-form" method="post" action="{% url 'cabinet' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="form-row">
-                            <label class="form-label" for="id_recipient">Преподаватель</label>
+                            <label class="form-label" for="id_recipient">Куратор</label>
                             {{ request_form.recipient }}
                             {% if request_form.recipient.errors %}
                             <ul class="form-errors">{% for e in request_form.recipient.errors %}<li>{{ e }}</li>{% endfor %}</ul>
@@ -171,6 +279,11 @@
                             <ul class="form-errors">{% for e in request_form.message.errors %}<li>{{ e }}</li>{% endfor %}</ul>
                             {% endif %}
                         </div>
+                        <div class="form-row">
+                            <label class="form-label" for="id_attachments">Вложения (необязательно)</label>
+                            <input type="file" name="attachments" id="id_attachments" class="form-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.rtf,.odt,.ods,.odp,.csv,.zip,.rar">
+                            <span class="form-hint">Допустимые форматы: {{ attachment_extensions }}. Не более 10 МБ на файл.</span>
+                        </div>
                         {% if request_form.non_field_errors %}
                         <ul class="form-errors form-errors-general">{% for e in request_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
                         {% endif %}
@@ -187,25 +300,41 @@
 {% if role == 'student' %}
 <script>
 (function() {
-    var modal = document.getElementById('cabinet-request-modal');
+    var requestModal = document.getElementById('cabinet-request-modal');
     var openBtn = document.getElementById('cabinet-open-request-btn');
     var closeBtn = document.getElementById('cabinet-modal-close');
     var backdrop = document.getElementById('cabinet-modal-backdrop');
-    if (!modal) return;
-    function openModal() {
-        modal.classList.add('is-open');
+    if (requestModal) {
+        function openRequestModal() {
+            requestModal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeRequestModal() {
+            requestModal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+        if (requestModal.getAttribute('data-open-on-load') === 'true') openRequestModal();
+        if (openBtn) openBtn.addEventListener('click', openRequestModal);
+        if (closeBtn) closeBtn.addEventListener('click', closeRequestModal);
+        if (backdrop) backdrop.addEventListener('click', closeRequestModal);
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && requestModal.classList.contains('is-open')) closeRequestModal();
+        });
+    }
+    var detailModal = document.getElementById('cabinet-student-detail-modal');
+    var detailBackdrop = document.getElementById('cabinet-student-detail-backdrop');
+    if (detailModal && detailModal.getAttribute('data-open-on-load') === 'true') {
+        detailModal.classList.add('is-open');
         document.body.style.overflow = 'hidden';
     }
-    function closeModal() {
-        modal.classList.remove('is-open');
-        document.body.style.overflow = '';
-    }
-    if (modal.getAttribute('data-open-on-load') === 'true') openModal();
-    if (openBtn) openBtn.addEventListener('click', openModal);
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (backdrop) backdrop.addEventListener('click', closeModal);
+    if (detailBackdrop) detailBackdrop.addEventListener('click', function() {
+        var cabinetUrl = "{% url 'cabinet' %}{% if filter_status %}?status={{ filter_status }}{% endif %}";
+        window.location = cabinetUrl;
+    });
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+        if (e.key === 'Escape' && detailModal && detailModal.classList.contains('is-open')) {
+            window.location = "{% url 'cabinet' %}{% if filter_status %}?status={{ filter_status }}{% endif %}";
+        }
     });
 })();
 </script>

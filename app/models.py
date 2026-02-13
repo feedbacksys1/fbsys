@@ -7,7 +7,7 @@ from django.conf import settings
 
 class Role(models.TextChoices):
     ADMIN = 'admin', 'Администратор'
-    TEACHER = 'teacher', 'Преподаватель'
+    TEACHER = 'teacher', 'Куратор'
     STUDENT = 'student', 'Студент'
 
 
@@ -43,7 +43,7 @@ class FeedbackStatus(models.TextChoices):
 
 class StudentRequest(models.Model):
     """
-    Заявка от студента преподавателю.
+    Заявка от студента куратору.
     """
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -55,7 +55,7 @@ class StudentRequest(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='received_requests',
-        verbose_name='Преподаватель (получатель)',
+        verbose_name='Куратор (получатель)',
     )
     topic = models.CharField('Тема', max_length=200, blank=True)
     message = models.TextField('Сообщение')
@@ -71,6 +71,12 @@ class StudentRequest(models.Model):
         null=True,
         blank=True,
     )
+    thread_opened_at = models.DateTimeField(
+        'Переписка открыта',
+        null=True,
+        blank=True,
+        help_text='Когда куратор написал первое сообщение в переписке',
+    )
 
     class Meta:
         verbose_name = 'заявка студента'
@@ -80,6 +86,61 @@ class StudentRequest(models.Model):
     def __str__(self):
         topic_preview = (self.topic or self.message)[:50]
         return f'{self.sender.get_username()} → {self.recipient.get_username()}: {topic_preview}'
+
+
+class StudentRequestMessage(models.Model):
+    """Сообщение в переписке по заявке (куратор ↔ студент)."""
+    request = models.ForeignKey(
+        StudentRequest,
+        on_delete=models.CASCADE,
+        related_name='thread_messages',
+        verbose_name='Заявка',
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='request_messages',
+        verbose_name='Автор',
+    )
+    body = models.TextField('Текст сообщения')
+    created_at = models.DateTimeField('Дата отправки', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'сообщение в переписке'
+        verbose_name_plural = 'сообщения в переписке'
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'{self.author.get_username()} в заявке #{self.request_id}: {self.body[:30]}'
+
+
+def request_attachment_upload_to(instance, filename):
+    """Путь загрузки: request_attachments/request_<id>/<uuid>_<original>."""
+    import uuid
+    ext = filename.split('.')[-1] if '.' in filename else ''
+    safe = (filename[: 50] + '..') if len(filename) > 50 else filename
+    return f'request_attachments/request_{instance.request_id}/{uuid.uuid4().hex}_{safe}'
+
+
+class RequestAttachment(models.Model):
+    """Прикреплённый файл к заявке студента (pdf, docx, xlsx и т.д.)."""
+    request = models.ForeignKey(
+        StudentRequest,
+        on_delete=models.CASCADE,
+        related_name='attachments',
+        verbose_name='Заявка',
+    )
+    file = models.FileField('Файл', upload_to=request_attachment_upload_to)
+    original_name = models.CharField('Имя файла', max_length=255)
+    uploaded_at = models.DateTimeField('Дата загрузки', auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'вложение заявки'
+        verbose_name_plural = 'вложения заявок'
+        ordering = ['uploaded_at']
+
+    def __str__(self):
+        return self.original_name
 
 
 class GeneralFeedback(models.Model):

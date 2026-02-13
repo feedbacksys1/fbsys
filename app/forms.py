@@ -11,16 +11,16 @@ User = get_user_model()
 
 
 def get_teachers_queryset():
-    """Пользователи с ролью «Преподаватель» для выбора в заявке."""
+    """Пользователи с ролью «Куратор» для выбора в заявке."""
     return User.objects.filter(profile__role=Role.TEACHER).order_by('last_name', 'first_name')
 
 
 class StudentRequestForm(forms.Form):
     recipient = forms.ModelChoiceField(
         queryset=User.objects.none(),
-        label='Преподаватель',
+        label='Куратор',
         widget=forms.Select(attrs={'class': 'form-input form-select'}),
-        empty_label='Выберите преподавателя',
+        empty_label='Выберите куратора',
     )
     topic = forms.CharField(
         max_length=200,
@@ -50,6 +50,32 @@ class StudentRequestForm(forms.Form):
         if not message:
             raise forms.ValidationError('Введите текст сообщения.')
         return message
+
+
+# Разрешённые расширения для вложений заявки
+REQUEST_ATTACHMENT_EXTENSIONS = {
+    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+    'txt', 'rtf', 'odt', 'ods', 'odp', 'csv', 'zip', 'rar',
+}
+REQUEST_ATTACHMENT_MAX_SIZE = 10 * 1024 * 1024  # 10 MB
+
+
+class RequestReplyForm(forms.Form):
+    """Ответ в переписке по заявке."""
+    body = forms.CharField(
+        label='Сообщение',
+        widget=forms.Textarea(attrs={
+            'class': 'form-input form-textarea',
+            'rows': 4,
+            'placeholder': 'Введите текст ответа...',
+        }),
+    )
+
+    def clean_body(self):
+        body = (self.cleaned_data.get('body') or '').strip()
+        if not body:
+            raise forms.ValidationError('Введите текст сообщения.')
+        return body
 
 
 class ProfileSettingsForm(forms.Form):

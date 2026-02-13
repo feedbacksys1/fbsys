@@ -7,7 +7,7 @@ from django.urls import reverse
 def user_profile(request):
     """
     Добавляет в контекст шаблонов профиль текущего пользователя (или None),
-    чтобы в base.html можно было показывать разный пункт меню для студентов и преподавателей.
+    чтобы в base.html можно было показывать разный пункт меню для студентов и кураторов.
     """
     profile = None
     if getattr(request, 'user', None) and request.user.is_authenticated:

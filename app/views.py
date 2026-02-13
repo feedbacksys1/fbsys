@@ -2,7 +2,8 @@
 Представления основного приложения.
 """
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.urls import reverse
+from django.http import HttpResponse, FileResponse, Http404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
@@ -11,8 +12,12 @@ from django.utils import timezone
 
 from django.contrib import messages
 
-from .forms import RegistrationForm, LoginForm, ProfileSettingsForm, PasswordChangeFormStyled, StudentRequestForm
-from .models import Profile, Role, GeneralFeedback, FeedbackStatus, StudentRequest
+from .forms import (
+    RegistrationForm, LoginForm, ProfileSettingsForm, PasswordChangeFormStyled,
+    StudentRequestForm, RequestReplyForm,
+    REQUEST_ATTACHMENT_EXTENSIONS, REQUEST_ATTACHMENT_MAX_SIZE,
+)
+from .models import Profile, Role, GeneralFeedback, FeedbackStatus, StudentRequest, StudentRequestMessage, RequestAttachment
 
 User = get_user_model()
 
@@ -201,12 +206,21 @@ def _is_staff(user):
     return user.is_authenticated and user.is_staff
 
 
+def _validate_attachment(file):
+    """Проверка расширения и размера файла. Возвращает (ok, error_message)."""
+    ext = (file.name.split('.')[-1] or '').lower()
+    if ext not in REQUEST_ATTACHMENT_EXTENSIONS:
+        return False, f'Недопустимый тип файла. Разрешены: {", ".join(sorted(REQUEST_ATTACHMENT_EXTENSIONS))}'
+    if file.size > REQUEST_ATTACHMENT_MAX_SIZE:
+        return False, 'Размер файла не должен превышать 10 МБ.'
+    return True, None
+
+
 @login_required
 def cabinet_view(request):
     """
-    Личный кабинет для студентов и панель управления для преподавателей.
-    Доступ только для не-админов; админы перенаправляются в админ-панель.
-    Обработка формы заявки преподавателю (только для студентов).
+    Личный кабинет для студентов и панель управления для кураторов.
+    Переписка по заявке, вложения к заявке.
     """
     if request.user.is_staff:
         return redirect('admin_panel')
@@ -219,47 +233,107 @@ def cabinet_view(request):
 
     request_form = None
     detail_request = None
+    thread_messages = []
+    reply_form = None
+    redirect_detail = None  # для редиректа с сохранением ?detail=id
 
-    if role == Role.STUDENT:
-        request_form = StudentRequestForm(
-            request.POST if request.method == 'POST' else None
-        )
-        if request.method == 'POST' and request_form.is_valid():
-            StudentRequest.objects.create(
+    # --- POST: ответ в переписке (куратор или студент) ---
+    if request.method == 'POST' and request.POST.get('reply_body') is not None:
+        reply_form = RequestReplyForm({'body': request.POST.get('reply_body', '')})
+        if reply_form.is_valid():
+            req_id = request.POST.get('request_id')
+            try:
+                req_id = int(req_id)
+                req = StudentRequest.objects.get(pk=req_id)
+            except (TypeError, ValueError, StudentRequest.DoesNotExist):
+                req = None
+            if req and role == Role.TEACHER and req.recipient_id == request.user.pk:
+                StudentRequestMessage.objects.create(
+                    request=req,
+                    author=request.user,
+                    body=reply_form.cleaned_data['body'].strip(),
+                )
+                if not req.thread_opened_at:
+                    req.thread_opened_at = timezone.now()
+                    req.save(update_fields=['thread_opened_at'])
+                messages.success(request, 'Ответ отправлен.')
+                qs = '?detail=' + str(req_id)
+                if request.GET.get('status'):
+                    qs += '&status=' + request.GET.get('status')
+                return redirect(reverse('cabinet') + qs)
+            elif req and role == Role.STUDENT and req.sender_id == request.user.pk and req.thread_opened_at:
+                StudentRequestMessage.objects.create(
+                    request=req,
+                    author=request.user,
+                    body=reply_form.cleaned_data['body'].strip(),
+                )
+                messages.success(request, 'Ответ отправлен.')
+                qs = '?detail=' + str(req_id)
+                if request.GET.get('status'):
+                    qs += '&status=' + request.GET.get('status')
+                return redirect(reverse('cabinet') + qs)
+            else:
+                messages.error(request, 'Не удалось отправить ответ.')
+        else:
+            redirect_detail = request.POST.get('request_id')
+
+    # --- POST: смена статуса (куратор) ---
+    if request.method == 'POST' and request.POST.get('new_status') and not redirect_detail:
+        request_id = request.POST.get('request_id')
+        new_status = request.POST.get('new_status')
+        if request_id and new_status and new_status in dict(FeedbackStatus.choices):
+            try:
+                req = StudentRequest.objects.get(pk=int(request_id), recipient=request.user)
+                req.status = new_status
+                req.status_changed_at = timezone.now()
+                req.save()
+                messages.success(request, 'Статус заявки обновлён.')
+                redirect_status = request.POST.get('redirect_status')
+                redirect_detail = int(request_id)
+                if redirect_status and redirect_status in dict(FeedbackStatus.choices):
+                    return redirect(reverse('cabinet') + '?detail=' + str(redirect_detail) + '&status=' + redirect_status)
+                return redirect(reverse('cabinet') + '?detail=' + str(redirect_detail))
+            except (StudentRequest.DoesNotExist, ValueError):
+                pass
+
+    # --- POST: новая заявка (студент) с вложениями ---
+    if role == Role.STUDENT and request.method == 'POST' and not request.POST.get('request_id'):
+        request_form = StudentRequestForm(request.POST)
+        if request_form.is_valid():
+            req = StudentRequest.objects.create(
                 sender=request.user,
                 recipient=request_form.cleaned_data['recipient'],
                 topic=(request_form.cleaned_data.get('topic') or '').strip(),
                 message=request_form.cleaned_data['message'].strip(),
             )
+            files = request.FILES.getlist('attachments')
+            for f in files:
+                ok, err = _validate_attachment(f)
+                if not ok:
+                    messages.warning(request, err)
+                    continue
+                original_name = f.name
+                RequestAttachment.objects.create(request=req, file=f, original_name=original_name)
             messages.success(request, 'Заявка успешно отправлена.')
             return redirect('cabinet')
 
-    if role == Role.TEACHER:
-        if request.method == 'POST':
-            request_id = request.POST.get('request_id')
-            new_status = request.POST.get('new_status')
-            if request_id and new_status and new_status in dict(FeedbackStatus.choices):
-                try:
-                    req = StudentRequest.objects.get(pk=int(request_id), recipient=request.user)
-                    req.status = new_status
-                    req.status_changed_at = timezone.now()
-                    req.save()
-                    messages.success(request, 'Статус заявки обновлён.')
-                    redirect_status = request.POST.get('redirect_status')
-                    if redirect_status and redirect_status in dict(FeedbackStatus.choices):
-                        return redirect('cabinet' + '?status=' + redirect_status)
-                    return redirect('cabinet')
-                except (StudentRequest.DoesNotExist, ValueError):
-                    pass
-        detail_id = request.GET.get('detail')
-        if detail_id:
-            try:
-                detail_request = StudentRequest.objects.get(
-                    pk=int(detail_id),
-                    recipient=request.user,
-                )
-            except (StudentRequest.DoesNotExist, ValueError):
-                pass
+    if role == Role.STUDENT and not request_form:
+        request_form = StudentRequestForm(request.POST if request.method == 'POST' else None)
+
+    # --- Загрузка заявки для детального просмотра (куратор или студент) ---
+    detail_id = request.GET.get('detail') or (redirect_detail and str(redirect_detail))
+    if detail_id:
+        try:
+            req = StudentRequest.objects.get(pk=int(detail_id))
+            if role == Role.TEACHER and req.recipient_id == request.user.pk:
+                detail_request = req
+            elif role == Role.STUDENT and req.sender_id == request.user.pk:
+                detail_request = req
+        except (StudentRequest.DoesNotExist, ValueError):
+            pass
+        if detail_request:
+            thread_messages = list(detail_request.thread_messages.select_related('author').order_by('created_at'))
+            reply_form = reply_form or RequestReplyForm()
 
     filter_status = request.GET.get('status')
     if filter_status not in dict(FeedbackStatus.choices):
@@ -270,8 +344,11 @@ def cabinet_view(request):
         'role': role,
         'request_form': request_form,
         'detail_request': detail_request,
+        'thread_messages': thread_messages,
+        'reply_form': reply_form,
         'status_choices': list(FeedbackStatus.choices),
         'filter_status': filter_status,
+        'attachment_extensions': ', '.join(sorted(REQUEST_ATTACHMENT_EXTENSIONS)),
     }
     if role == Role.STUDENT:
         qs = StudentRequest.objects.filter(sender=request.user).select_related('recipient')
@@ -287,6 +364,24 @@ def cabinet_view(request):
 
 
 @login_required
+def download_request_attachment(request, attachment_id):
+    """
+    Скачивание вложения к заявке. Доступно куратору (получатель заявки) и студенту (отправитель заявки).
+    """
+    attachment = get_object_or_404(RequestAttachment, pk=attachment_id)
+    req = attachment.request
+    # Куратор — получатель заявки; студент — отправитель
+    if request.user.pk != req.recipient_id and request.user.pk != req.sender_id:
+        raise Http404
+    try:
+        file_handle = attachment.file.open('rb')
+        response = FileResponse(file_handle, as_attachment=True, filename=attachment.original_name)
+        return response
+    except (OSError, ValueError):
+        raise Http404
+
+
+@login_required
 @user_passes_test(_is_staff, login_url='landing')
 def admin_panel(request):
     """
@@ -299,7 +394,7 @@ def admin_panel(request):
 @user_passes_test(_is_staff, login_url='landing')
 def admin_statistics(request):
     """
-    Просмотр статистики по заявкам по каждому преподавателю (только для staff).
+    Просмотр статистики по заявкам по каждому куратору (только для staff).
     """
     search_q = request.GET.get('q', '').strip()
     stats = _get_teacher_stats(search_q)
@@ -307,7 +402,7 @@ def admin_statistics(request):
 
 
 def _get_teacher_stats(search_q=None):
-    """Возвращает список словарей со статистикой по преподавателям (для страницы и экспорта)."""
+    """Возвращает список словарей со статистикой по кураторам (для страницы и экспорта)."""
     teachers = User.objects.filter(profile__role=Role.TEACHER).order_by('last_name', 'first_name')
     if search_q:
         teachers = teachers.filter(
@@ -337,7 +432,7 @@ def _get_teacher_stats(search_q=None):
 @user_passes_test(_is_staff, login_url='landing')
 def admin_statistics_export(request):
     """
-    Скачивание статистики по преподавателям в виде Excel (только для staff).
+    Скачивание статистики по кураторам в виде Excel (только для staff).
     Учитывается текущий поисковый запрос (параметр q).
     """
     from openpyxl import Workbook
@@ -351,7 +446,7 @@ def admin_statistics_export(request):
     ws = wb.active
     ws.title = 'Статистика'
 
-    headers = ['Преподаватель', 'Всего заявок', 'Рассмотрено', 'Ожидают рассмотрения']
+    headers = ['Куратор', 'Всего заявок', 'Рассмотрено', 'Ожидают рассмотрения']
     for col, header in enumerate(headers, 1):
         cell = ws.cell(row=1, column=col, value=header)
         cell.font = Font(bold=True)

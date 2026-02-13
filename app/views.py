@@ -45,6 +45,13 @@ def advantages(request):
     return render(request, 'advantages.html')
 
 
+def request_rules(request):
+    """
+    Статичная страница «Правила подачи заявок».
+    """
+    return render(request, 'request_rules.html')
+
+
 def faq(request):
     """
     Статичная страница «Вопросы и ответы».

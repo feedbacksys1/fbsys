@@ -1755,12 +1755,34 @@ select.form-select {
 
 .register-panel-right {
     background: var(--color-bg);
+    padding: 2rem 1.5rem 2rem 2rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow-y: auto;
+}
+
+.register-right-title {
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto 1.25rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+    text-align: left;
 }
 
 .register-form-wrap {
     max-width: 520px;
     width: 100%;
     margin: 0 auto;
+}
+
+.register-form-card {
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
 }
 
 .register-panel-right .auth-form .form-row {

@@ -7,14 +7,15 @@
 {% block content %}
 <div class="register-split">
     <div class="register-panel register-panel-left">
-        <span class="register-panel-corner">Регистрация</span>
         <div class="register-panel-center">
             <h1 class="register-panel-title">Создайте аккаунт</h1>
             <p class="register-panel-lead">для того что бы начать отправлять заявки</p>
         </div>
     </div>
     <div class="register-panel register-panel-right">
+        <h2 class="register-right-title">Регистрация</h2>
         <div class="register-form-wrap">
+            <div class="register-form-card">
             <form class="auth-form" method="post" action="{% url 'site_register' %}">
                 {% csrf_token %}
                 {% if form.non_field_errors %}
@@ -86,6 +87,7 @@
                     Уже есть аккаунт? <a href="{% url 'site_login' %}">Войти</a>
                 </p>
             </form>
+            </div>
         </div>
     </div>
 </div>

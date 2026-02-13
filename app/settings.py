@@ -25,7 +25,11 @@ SECRET_KEY = "django-insecure-sojp+h10p0h0622j@n_le-un9fbwy86nds0_$n2*u%7ng#@%h*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["feedbacksys-fbsys.amvera.io"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://feedbacksys-fbsys.amvera.io",
+]
 
 
 # Application definition
@@ -75,20 +79,34 @@ WSGI_APPLICATION = "app.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "feedbacksys",
+#         "USER": "root",
+#         "PASSWORD": "root",
+#         "HOST": "localhost",
+#         "PORT": "3306",
+#         "OPTIONS": {
+#             "charset": "utf8mb4",
+#         },
+#     }
+# }
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "feedbacksys",
+        "NAME": "feedback",
         "USER": "root",
         "PASSWORD": "root",
-        "HOST": "localhost",
+        "HOST": "amvera-fbsys-run-fbsys-db",
         "PORT": "3306",
         "OPTIONS": {
             "charset": "utf8mb4",
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -125,6 +143,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 LOGIN_REDIRECT_URL = "landing"

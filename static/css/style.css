@@ -922,6 +922,10 @@ body.register-fullpage {
     border-left-color: var(--color-primary-light);
 }
 
+.rules-page .about-block {
+    border-left-color: var(--color-primary);
+}
+
 .about-block-title {
     font-size: 1.2rem;
     font-weight: 600;

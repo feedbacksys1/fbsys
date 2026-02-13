@@ -52,6 +52,13 @@ def request_rules(request):
     return render(request, 'request_rules.html')
 
 
+def student_guide(request):
+    """
+    Статичная страница «Инструкция для студентов».
+    """
+    return render(request, 'student_guide.html')
+
+
 def faq(request):
     """
     Статичная страница «Вопросы и ответы».

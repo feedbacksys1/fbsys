@@ -26,6 +26,7 @@ urlpatterns = [
     path('advantages/', views.advantages, name='advantages'),
     path('faq/', views.faq, name='faq'),
     path('request-rules/', views.request_rules, name='request_rules'),
+    path('student-guide/', views.student_guide, name='student_guide'),
     path('feedback/', views.feedback, name='feedback'),
     path('login/', views.login_view, name='site_login'),
     path('register/', views.register, name='site_register'),

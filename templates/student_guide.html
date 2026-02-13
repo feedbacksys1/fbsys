@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Инструкция для студентов{% endblock %}
+
+{% block content %}
+<div class="advantages-page">
+    <header class="advantages-header">
+        <h1 class="page-title">Инструкция для студентов</h1>
+        <p class="page-lead">Пошаговое руководство: регистрация, вход в личный кабинет, отправка заявок и работа с настройками.</p>
+    </header>
+    <div class="advantages-list">
+        <section class="advantages-item">
+            <h2 class="advantages-item-title"><span class="advantages-num">1</span> Регистрация</h2>
+            <p>Нажмите «Регистрация» в правом верхнем углу страницы. Заполните форму: имя, фамилия, номер студенческого билета (при наличии), логин, email и пароль. Логин и email должны быть уникальными. После успешной регистрации вы автоматически войдёте в систему и попадёте на главную страницу.</p>
+        </section>
+        <section class="advantages-item">
+            <h2 class="advantages-item-title"><span class="advantages-num">2</span> Вход в систему</h2>
+            <p>Если у вас уже есть аккаунт, нажмите «Войти». Укажите логин или email и пароль. После входа в правом верхнем углу отобразится ваш логин — нажмите на него, чтобы открыть меню.</p>
+        </section>
+        <section class="advantages-item">
+            <h2 class="advantages-item-title"><span class="advantages-num">3</span> Личный кабинет</h2>
+            <p>В выпадающем меню выберите «Личный кабинет». На этой странице отображается список ваших заявок: дата отправки, преподаватель, тема и текущий статус. Здесь же можно отправить новую заявку.</p>
+        </section>
+        <section class="advantages-item">
+            <h2 class="advantages-item-title"><span class="advantages-num">4</span> Отправка заявки преподавателю</h2>
+            <p>В личном кабинете нажмите кнопку «Отправить заявку». В открывшемся окне выберите преподавателя из списка, укажите тему (кратко) и текст сообщения. Поле «Сообщение» обязательно для заполнения. Нажмите «Отправить заявку» — заявка появится в списке со статусом «Новый».</p>
+        </section>
+        <section class="advantages-item">
+            <h2 class="advantages-item-title"><span class="advantages-num">5</span> Статусы заявок</h2>
+            <p>У каждой заявки есть статус: <strong>Новый</strong> — заявка только отправлена; <strong>В обработке</strong> — преподаватель работает с обращением; <strong>Рассмотрен</strong> — заявка рассмотрена. Список можно отфильтровать по статусу с помощью ссылок над таблицей.</p>
+        </section>
+        <section class="advantages-item">
+            <h2 class="advantages-item-title"><span class="advantages-num">6</span> Настройки аккаунта</h2>
+            <p>В меню пользователя выберите «Настройки». На странице настроек можно изменить имя, фамилию, email, логин и номер студента, а также сменить пароль. После изменений нажмите «Сохранить» или «Изменить пароль» в соответствующем блоке.</p>
+        </section>
+    </div>
+</div>
+{% endblock %}

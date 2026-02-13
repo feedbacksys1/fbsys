@@ -92,11 +92,21 @@ body.register-fullpage {
 
 .logo {
     font-weight: 700;
-    font-size: 1.1875rem;
+    font-size: 1.25rem;
+    letter-spacing: 0.02em;
     color: var(--color-surface);
     text-decoration: none;
     text-align: center;
     justify-self: center;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius);
+    transition: background 0.2s, color 0.2s;
+}
+
+.logo:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-surface);
 }
 
 

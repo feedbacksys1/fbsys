@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Система обратной связи{% endblock %} — Московский университет имени С.Ю. Витте</title>
+    <title>{% block title %}Система обслуживания заявок{% endblock %} — Московский университет имени С.Ю. Витте</title>
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,7 @@
                 <a href="{% url 'feedback' %}">Обратная связь</a>
                 <a href="{% url 'contacts' %}">Контакты</a>
             </nav>
-            <a href="{% url 'landing' %}" class="logo">Система обратной связи</a>
+            <a href="{% url 'landing' %}" class="logo">Система обслуживания заявок</a>
             <div class="header-nav header-nav-right">
                 <div class="header-nav-auth">
                     {% if user.is_authenticated %}

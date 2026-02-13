@@ -19,7 +19,7 @@ User = get_user_model()
 
 def landing(request):
     """
-    Главная (лендинг) страница сервиса обратной связи.
+    Главная (лендинг) страница системы обслуживания заявок.
     """
     return render(request, 'landing.html')
 
@@ -68,7 +68,7 @@ def faq(request):
 
 def feedback(request):
     """
-    Страница обратной связи (общая форма для пользователей сайта).
+    Страница обратной связи (общая форма для посетителей сайта).
     """
     if request.method == 'POST':
         name = (request.POST.get('name') or '').strip()
@@ -426,7 +426,7 @@ def admin_users(request):
 @user_passes_test(_is_staff, login_url='landing')
 def admin_feedback_list(request):
     """
-    Просмотр форм обратной связи и смена статусов (только для staff).
+    Просмотр обращений с сайта и смена статусов (только для staff).
     """
     if request.method == 'POST':
         now = timezone.now()

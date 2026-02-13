@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-sojp+h10p0h0622j@n_le-un9fbwy86nds0_$n2*u%7ng#@%h*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["feedbacksys-fbsys.amvera.io"]
+ALLOWED_HOSTS = ["feedbacksys-fbsys.amvera.io", '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
     "https://feedbacksys-fbsys.amvera.io",
@@ -80,34 +80,34 @@ WSGI_APPLICATION = "app.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": "feedbacksys",
-#         "USER": "root",
-#         "PASSWORD": "root",
-#         "HOST": "localhost",
-#         "PORT": "3306",
-#         "OPTIONS": {
-#             "charset": "utf8mb4",
-#         },
-#     }
-# }
-
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "feedback",
+        "NAME": "feedbacksys",
         "USER": "root",
         "PASSWORD": "root",
-        "HOST": "amvera-fbsys-run-fbsys-db",
+        "HOST": "localhost",
         "PORT": "3306",
         "OPTIONS": {
             "charset": "utf8mb4",
         },
     }
 }
+
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": "feedback",
+#         "USER": "root",
+#         "PASSWORD": "root",
+#         "HOST": "amvera-fbsys-run-fbsys-db",
+#         "PORT": "3306",
+#         "OPTIONS": {
+#             "charset": "utf8mb4",
+#         },
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

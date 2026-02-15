@@ -5,7 +5,7 @@
 {% block content %}
 <div class="admin-content admin-content_full">
     <h1 class="admin-page-title">Просмотр форм обратной связи</h1>
-    <p class="admin-page-lead">Список обращений. Нажмите «Детали» для просмотра и изменения статуса.</p>
+    <p class="admin-page-lead">Просмотр заявок, поступивших через форму обратной связи</p>
     <div class="admin-filter">
         <span class="admin-filter-label">Статус:</span>
         <a href="{% url 'admin_feedback_list' %}" class="admin-filter-link {% if not filter_status %}is-active{% endif %}">Все</a>

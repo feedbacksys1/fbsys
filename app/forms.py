@@ -12,7 +12,14 @@ User = get_user_model()
 
 def get_teachers_queryset():
     """Пользователи с ролью «Куратор» для выбора в заявке."""
-    return User.objects.filter(profile__role=Role.TEACHER).order_by('last_name', 'first_name')
+    return User.objects.filter(profile__role=Role.TEACHER).select_related('profile').order_by('last_name', 'first_name')
+
+
+def _curator_choice_label(user):
+    """Подпись для пункта выбора куратора: Имя Фамилия — Тип запроса."""
+    name = user.get_full_name() or user.get_username()
+    req_type = getattr(getattr(user, 'profile', None), 'request_type', None) or 'Заявка'
+    return f'{name} — {req_type}'
 
 
 class StudentRequestForm(forms.Form):
@@ -43,7 +50,9 @@ class StudentRequestForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['recipient'].queryset = get_teachers_queryset()
+        qs = get_teachers_queryset()
+        self.fields['recipient'].queryset = qs
+        self.fields['recipient'].label_from_instance = _curator_choice_label
 
     def clean_message(self):
         message = (self.cleaned_data.get('message') or '').strip()
@@ -58,6 +67,20 @@ REQUEST_ATTACHMENT_EXTENSIONS = {
     'txt', 'rtf', 'odt', 'ods', 'odp', 'csv', 'zip', 'rar',
 }
 REQUEST_ATTACHMENT_MAX_SIZE = 10 * 1024 * 1024  # 10 MB
+
+
+class CuratorRequestTypeForm(forms.Form):
+    """Форма установки типа запроса куратора (отображается в выборе у студентов)."""
+    request_type = forms.CharField(
+        max_length=200,
+        required=False,
+        label='Тип запроса',
+        widget=forms.TextInput(attrs={
+            'class': 'form-input',
+            'placeholder': 'Например: Консультация по диплому',
+            'maxlength': '200',
+        }),
+    )
 
 
 class RequestReplyForm(forms.Form):
@@ -166,10 +189,10 @@ class RegistrationForm(UserCreationForm):
     student_number = forms.CharField(
         max_length=50,
         required=False,
-        label='Номер студента',
+        label='Номер студенческого билета (только для студентов)',
         widget=forms.TextInput(attrs={
             'class': 'form-input',
-            'placeholder': 'Номер студенческого билета',
+            'placeholder': 'Ваш номер',
         }),
     )
     password1 = forms.CharField(

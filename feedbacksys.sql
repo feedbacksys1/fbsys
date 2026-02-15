@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 13, 2026 at 11:11 AM
+-- Generation Time: Feb 15, 2026 at 11:13 AM
 -- Server version: 8.0.42
 -- PHP Version: 8.0.1
 
@@ -57,17 +57,32 @@ CREATE TABLE `app_profile` (
   `id` bigint NOT NULL,
   `role` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `student_number` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` int NOT NULL
+  `user_id` int NOT NULL,
+  `request_type` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `app_profile`
 --
 
-INSERT INTO `app_profile` (`id`, `role`, `student_number`, `user_id`) VALUES
-(1, 'student', '12345', 1),
-(2, 'teacher', '34234', 3),
-(3, 'admin', '', 2);
+INSERT INTO `app_profile` (`id`, `role`, `student_number`, `user_id`, `request_type`) VALUES
+(1, 'student', '12345', 1, ''),
+(2, 'teacher', '34234', 3, ''),
+(3, 'admin', '', 2, '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `app_requestattachment`
+--
+
+CREATE TABLE `app_requestattachment` (
+  `id` bigint NOT NULL,
+  `file` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `original_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uploaded_at` datetime(6) NOT NULL,
+  `request_id` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -83,15 +98,30 @@ CREATE TABLE `app_studentrequest` (
   `recipient_id` int NOT NULL,
   `sender_id` int NOT NULL,
   `message` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `topic` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL
+  `topic` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thread_opened_at` datetime(6) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `app_studentrequest`
 --
 
-INSERT INTO `app_studentrequest` (`id`, `created_at`, `status`, `status_changed_at`, `recipient_id`, `sender_id`, `message`, `topic`) VALUES
-(1, '2026-02-12 13:43:11.978283', 'reviewed', '2026-02-13 09:44:29.925649', 3, 1, 'Тестовое сообщение', 'Тестовая тема');
+INSERT INTO `app_studentrequest` (`id`, `created_at`, `status`, `status_changed_at`, `recipient_id`, `sender_id`, `message`, `topic`, `thread_opened_at`) VALUES
+(1, '2026-02-12 13:43:11.978283', 'reviewed', '2026-02-13 09:44:29.925649', 3, 1, 'Тестовое сообщение', 'Тестовая тема', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `app_studentrequestmessage`
+--
+
+CREATE TABLE `app_studentrequestmessage` (
+  `id` bigint NOT NULL,
+  `body` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` datetime(6) NOT NULL,
+  `author_id` int NOT NULL,
+  `request_id` bigint NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -169,7 +199,15 @@ INSERT INTO `auth_permission` (`id`, `name`, `content_type_id`, `codename`) VALU
 (33, 'Can add заявка студента', 9, 'add_studentrequest'),
 (34, 'Can change заявка студента', 9, 'change_studentrequest'),
 (35, 'Can delete заявка студента', 9, 'delete_studentrequest'),
-(36, 'Can view заявка студента', 9, 'view_studentrequest');
+(36, 'Can view заявка студента', 9, 'view_studentrequest'),
+(37, 'Can add вложение заявки', 10, 'add_requestattachment'),
+(38, 'Can change вложение заявки', 10, 'change_requestattachment'),
+(39, 'Can delete вложение заявки', 10, 'delete_requestattachment'),
+(40, 'Can view вложение заявки', 10, 'view_requestattachment'),
+(41, 'Can add сообщение в переписке', 11, 'add_studentrequestmessage'),
+(42, 'Can change сообщение в переписке', 11, 'change_studentrequestmessage'),
+(43, 'Can delete сообщение в переписке', 11, 'delete_studentrequestmessage'),
+(44, 'Can view сообщение в переписке', 11, 'view_studentrequestmessage');
 
 -- --------------------------------------------------------
 
@@ -196,9 +234,9 @@ CREATE TABLE `auth_user` (
 --
 
 INSERT INTO `auth_user` (`id`, `password`, `last_login`, `is_superuser`, `username`, `first_name`, `last_name`, `email`, `is_staff`, `is_active`, `date_joined`) VALUES
-(1, 'pbkdf2_sha256$1200000$yWUERsFIeTJnkHLHVmOzk8$qPYeZ9Qt1BImArSGAXIHMdGU/VhvtJ85LlSVrHzBW64=', '2026-02-12 13:58:17.476351', 0, 'test-user', 'Тестовый', 'Пользователь', 'test-user@gmail.com', 0, 1, '2026-02-12 10:56:37.166645'),
-(2, 'pbkdf2_sha256$1200000$aCnmRNgNzHHhEUGOBFwS1S$YgLYlhgH/VhQh2SVvdW0Z4QPhENyFUW6c8dRFY0pQDQ=', '2026-02-13 09:44:35.805261', 1, 'admin', '', '', 'admin@gmail.com', 1, 1, '2026-02-12 11:00:59.755556'),
-(3, 'pbkdf2_sha256$1200000$BwaK6pcFevAVNCUl5bJWkn$Mx9qhx0oFzBmZz3ybcm4CEMPAxXHV19t8b4sWqSoZac=', '2026-02-13 09:44:25.682874', 0, 'test-prep', 'Тестовый', 'Преподаватель', 'test-prep@gmail.com', 0, 1, '2026-02-12 11:17:14.487811');
+(1, 'pbkdf2_sha256$1200000$yWUERsFIeTJnkHLHVmOzk8$qPYeZ9Qt1BImArSGAXIHMdGU/VhvtJ85LlSVrHzBW64=', '2026-02-15 11:11:06.874964', 0, 'test-user', 'Тестовый', 'Пользователь', 'test-user@gmail.com', 0, 1, '2026-02-12 10:56:37.166645'),
+(2, 'pbkdf2_sha256$1200000$aCnmRNgNzHHhEUGOBFwS1S$YgLYlhgH/VhQh2SVvdW0Z4QPhENyFUW6c8dRFY0pQDQ=', '2026-02-15 11:09:48.457405', 1, 'admin', '', '', 'admin@gmail.com', 1, 1, '2026-02-12 11:00:59.755556'),
+(3, 'pbkdf2_sha256$1200000$BwaK6pcFevAVNCUl5bJWkn$Mx9qhx0oFzBmZz3ybcm4CEMPAxXHV19t8b4sWqSoZac=', '2026-02-15 11:06:50.101144', 0, 'test-prep', 'Тестовый', 'Преподаватель', 'test-prep@gmail.com', 0, 1, '2026-02-12 11:17:14.487811');
 
 -- --------------------------------------------------------
 
@@ -261,7 +299,9 @@ INSERT INTO `django_content_type` (`id`, `app_label`, `model`) VALUES
 (1, 'admin', 'logentry'),
 (8, 'app', 'generalfeedback'),
 (7, 'app', 'profile'),
+(10, 'app', 'requestattachment'),
 (9, 'app', 'studentrequest'),
+(11, 'app', 'studentrequestmessage'),
 (2, 'auth', 'group'),
 (3, 'auth', 'permission'),
 (4, 'auth', 'user'),
@@ -307,7 +347,9 @@ INSERT INTO `django_migrations` (`id`, `app`, `name`, `applied`) VALUES
 (19, 'sessions', '0001_initial', '2026-02-12 10:55:42.120392'),
 (20, 'app', '0002_generalfeedback', '2026-02-12 11:25:02.555892'),
 (21, 'app', '0003_studentrequest', '2026-02-12 13:29:48.874504'),
-(22, 'app', '0004_studentrequest_message_studentrequest_topic', '2026-02-12 13:42:00.518354');
+(22, 'app', '0004_studentrequest_message_studentrequest_topic', '2026-02-12 13:42:00.518354'),
+(23, 'app', '0005_studentrequest_thread_opened_at_alter_profile_role_and_more', '2026-02-13 21:33:50.895799'),
+(24, 'app', '0006_profile_request_type', '2026-02-15 11:06:04.450725');
 
 -- --------------------------------------------------------
 
@@ -326,7 +368,8 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('6j79k3d2r2ptf4m4yzjfo6jbn0nwlnwz', '.eJxVjEEOwiAQAP_C2RBAtoBH730DWWCRqoGktCfj35WkB73OTObFPO5b8Xun1S-JXZhkp18WMD6oDpHuWG-Nx1a3dQl8JPywnc8t0fN6tH-Dgr2MLdmkQGbSKLK0AFYRCBJnhBStyxCAZP6CyaCbpNICXSBtkAxgpMDeH99LOCo:1vqVSd:e40XmH9D7xP7y1uwRkthUcshmRWMwwXnXWSa_XXPBXM', '2026-02-26 12:06:19.375133');
+('6j79k3d2r2ptf4m4yzjfo6jbn0nwlnwz', '.eJxVjEEOwiAQAP_C2RBAtoBH730DWWCRqoGktCfj35WkB73OTObFPO5b8Xun1S-JXZhkp18WMD6oDpHuWG-Nx1a3dQl8JPywnc8t0fN6tH-Dgr2MLdmkQGbSKLK0AFYRCBJnhBStyxCAZP6CyaCbpNICXSBtkAxgpMDeH99LOCo:1vqVSd:e40XmH9D7xP7y1uwRkthUcshmRWMwwXnXWSa_XXPBXM', '2026-02-26 12:06:19.375133'),
+('rx0m7tl7a2cvdcx7rnl0ib7x9bqwt4sv', '.eJxVjEEOwiAQAP_C2RBAtoBH730DWWCRqoGktCfj35WkB73OTObFPO5b8Xun1S-JXZhkp18WMD6oDpHuWG-Nx1a3dQl8JPywnc8t0fN6tH-Dgr2MLdmkQGbSKLK0AFYRCBJnhBStyxCAZP6CyaCbpNICXSBtkAxgpMDeH99LOCo:1vra1q:5x5_rAQx1k_8vZ_iDXeswHijrAHT9RCYnT7leut0NzM', '2026-03-01 11:11:06.915840');
 
 --
 -- Indexes for dumped tables
@@ -347,12 +390,27 @@ ALTER TABLE `app_profile`
   ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `app_requestattachment`
+--
+ALTER TABLE `app_requestattachment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `app_requestattachmen_request_id_bc1b6686_fk_app_stude` (`request_id`);
+
+--
 -- Indexes for table `app_studentrequest`
 --
 ALTER TABLE `app_studentrequest`
   ADD PRIMARY KEY (`id`),
   ADD KEY `app_studentrequest_recipient_id_2658f249_fk_auth_user_id` (`recipient_id`),
   ADD KEY `app_studentrequest_sender_id_014629ad_fk_auth_user_id` (`sender_id`);
+
+--
+-- Indexes for table `app_studentrequestmessage`
+--
+ALTER TABLE `app_studentrequestmessage`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `app_studentrequestmessage_author_id_9892c079_fk_auth_user_id` (`author_id`),
+  ADD KEY `app_studentrequestme_request_id_3676df83_fk_app_stude` (`request_id`);
 
 --
 -- Indexes for table `auth_group`
@@ -444,10 +502,22 @@ ALTER TABLE `app_profile`
   MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `app_requestattachment`
+--
+ALTER TABLE `app_requestattachment`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `app_studentrequest`
 --
 ALTER TABLE `app_studentrequest`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `app_studentrequestmessage`
+--
+ALTER TABLE `app_studentrequestmessage`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `auth_group`
@@ -465,7 +535,7 @@ ALTER TABLE `auth_group_permissions`
 -- AUTO_INCREMENT for table `auth_permission`
 --
 ALTER TABLE `auth_permission`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `auth_user`
@@ -495,13 +565,13 @@ ALTER TABLE `django_admin_log`
 -- AUTO_INCREMENT for table `django_content_type`
 --
 ALTER TABLE `django_content_type`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `django_migrations`
 --
 ALTER TABLE `django_migrations`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- Constraints for dumped tables
@@ -520,11 +590,24 @@ ALTER TABLE `app_profile`
   ADD CONSTRAINT `app_profile_user_id_87d292a0_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`);
 
 --
+-- Constraints for table `app_requestattachment`
+--
+ALTER TABLE `app_requestattachment`
+  ADD CONSTRAINT `app_requestattachmen_request_id_bc1b6686_fk_app_stude` FOREIGN KEY (`request_id`) REFERENCES `app_studentrequest` (`id`);
+
+--
 -- Constraints for table `app_studentrequest`
 --
 ALTER TABLE `app_studentrequest`
   ADD CONSTRAINT `app_studentrequest_recipient_id_2658f249_fk_auth_user_id` FOREIGN KEY (`recipient_id`) REFERENCES `auth_user` (`id`),
   ADD CONSTRAINT `app_studentrequest_sender_id_014629ad_fk_auth_user_id` FOREIGN KEY (`sender_id`) REFERENCES `auth_user` (`id`);
+
+--
+-- Constraints for table `app_studentrequestmessage`
+--
+ALTER TABLE `app_studentrequestmessage`
+  ADD CONSTRAINT `app_studentrequestme_request_id_3676df83_fk_app_stude` FOREIGN KEY (`request_id`) REFERENCES `app_studentrequest` (`id`),
+  ADD CONSTRAINT `app_studentrequestmessage_author_id_9892c079_fk_auth_user_id` FOREIGN KEY (`author_id`) REFERENCES `auth_user` (`id`);
 
 --
 -- Constraints for table `auth_group_permissions`

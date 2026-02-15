@@ -40,7 +40,7 @@
                     {% endif %}
                 </div>
                 <div class="form-row">
-                    <label class="form-label" for="id_student_number">Номер студента</label>
+                    <label class="form-label" for="id_student_number">Номер студенческого билета (только для студентов)</label>
                     {{ form.student_number }}
                     {% if form.student_number.errors %}
                     <ul class="form-errors">{% for e in form.student_number.errors %}<li>{{ e }}</li>{% endfor %}</ul>

@@ -14,7 +14,7 @@ from django.contrib import messages
 
 from .forms import (
     RegistrationForm, LoginForm, ProfileSettingsForm, PasswordChangeFormStyled,
-    StudentRequestForm, RequestReplyForm,
+    StudentRequestForm, RequestReplyForm, CuratorRequestTypeForm,
     REQUEST_ATTACHMENT_EXTENSIONS, REQUEST_ATTACHMENT_MAX_SIZE,
 )
 from .models import Profile, Role, GeneralFeedback, FeedbackStatus, StudentRequest, StudentRequestMessage, RequestAttachment
@@ -236,6 +236,17 @@ def cabinet_view(request):
     thread_messages = []
     reply_form = None
     redirect_detail = None  # для редиректа с сохранением ?detail=id
+    curator_request_type_form = None
+
+    # --- POST: сохранение типа запроса (куратор) ---
+    if role == Role.TEACHER and request.method == 'POST' and 'save_request_type' in request.POST:
+        curator_request_type_form = CuratorRequestTypeForm(request.POST)
+        if curator_request_type_form.is_valid():
+            prof, _ = Profile.objects.get_or_create(user=request.user, defaults={'role': Role.TEACHER})
+            prof.request_type = (curator_request_type_form.cleaned_data.get('request_type') or '').strip()[:200]
+            prof.save(update_fields=['request_type'])
+            messages.success(request, 'Тип запроса сохранён.')
+            return redirect('cabinet')
 
     # --- POST: ответ в переписке (куратор или студент) ---
     if request.method == 'POST' and request.POST.get('reply_body') is not None:
@@ -360,6 +371,12 @@ def cabinet_view(request):
         if filter_status:
             qs = qs.filter(status=filter_status)
         context['received_requests'] = qs
+        try:
+            profile = request.user.profile
+            initial_type = getattr(profile, 'request_type', '') or ''
+        except Profile.DoesNotExist:
+            initial_type = ''
+        context['curator_request_type_form'] = curator_request_type_form or CuratorRequestTypeForm(initial={'request_type': initial_type})
     return render(request, 'cabinet.html', context)
 
 

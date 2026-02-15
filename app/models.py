@@ -26,6 +26,12 @@ class Profile(models.Model):
         max_length=50,
         blank=True,
     )
+    request_type = models.CharField(
+        'Тип запроса',
+        max_length=200,
+        blank=True,
+        help_text='Отображается в выборе куратора у студентов (например: «Консультация по диплому»)',
+    )
 
     class Meta:
         verbose_name = 'профиль'

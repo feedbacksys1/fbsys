@@ -1401,6 +1401,29 @@ body.register-fullpage {
     margin-bottom: 1rem;
 }
 
+.cabinet-request-type-card {
+    margin-bottom: 1.5rem;
+}
+
+.cabinet-card-lead {
+    font-size: 0.9375rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.cabinet-request-type-form .form-row_inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.cabinet-request-type-form .form-row_inline .form-input {
+    flex: 1;
+    min-width: 200px;
+}
+
 .cabinet-filter {
     display: flex;
     align-items: center;

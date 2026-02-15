@@ -14,10 +14,26 @@
     <p class="cabinet-subtitle">Здесь вы можете посмотреть свои заявки или отправить новую</p>
     {% endif %}
     {% if role == 'teacher' %}
-    <p class="cabinet-subtitle">Здесь отображаются заявки студентов, адресованные вам. Нажмите «Детали» для просмотра и изменения статуса.</p>
+    <p class="cabinet-subtitle">Здесь Вы можете изменить Ваш тип запроса и посмотреть заявки от студентов.</p>
     {% endif %}
     <div class="cabinet-content">
         {% if role == 'teacher' %}
+        <section class="cabinet-card cabinet-request-type-card">
+            <h2 class="cabinet-card-title">Мой тип запроса</h2>
+            <p class="cabinet-card-lead">Укажите тип запроса — он будет отображаться у студентов в выпадающем списке при выборе куратора (например: «Консультация по диплому», «Вопрос по курсу»).</p>
+            <form method="post" action="{% url 'cabinet' %}" class="cabinet-request-type-form">
+                {% csrf_token %}
+                <input type="hidden" name="save_request_type" value="1">
+                <div class="form-row form-row_inline">
+                    <label class="form-label" for="id_request_type">Тип запроса</label>
+                    {{ curator_request_type_form.request_type }}
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+                {% if curator_request_type_form.request_type.errors %}
+                <ul class="form-errors">{% for e in curator_request_type_form.request_type.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </form>
+        </section>
         <section class="cabinet-card cabinet-requests-card">
             <h2 class="cabinet-card-title">Входящие заявки</h2>
             <div class="cabinet-filter">

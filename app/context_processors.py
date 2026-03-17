@@ -15,6 +15,67 @@ def user_profile(request):
     return {'user_profile': profile}
 
 
+def notifications(request):
+    """
+    Добавляет в контекст количество уведомлений по заявкам для текущего пользователя.
+
+    Для студентов:
+      - notif_status_updates: количество заявок, у которых статус уже не «Новый».
+    Для кураторов:
+      - notif_new_requests: количество заявок со статусом «Новый».
+    """
+    from .models import Profile, Role, StudentRequest, FeedbackStatus
+
+    user = getattr(request, 'user', None)
+    notif_new_requests = 0
+    notif_status_updates = 0
+
+    if not user or not user.is_authenticated:
+        return {
+            'notif_new_requests': notif_new_requests,
+            'notif_status_updates': notif_status_updates,
+        }
+
+    try:
+        profile = user.profile
+        role = profile.role
+    except Profile.DoesNotExist:
+        role = Role.STUDENT
+
+    last_curator_new_request = None
+    last_student_update_request = None
+
+    if role == Role.TEACHER:
+        notif_new_requests = StudentRequest.objects.filter(
+            recipient=user,
+            status=FeedbackStatus.NEW,
+        ).count()
+        last_curator_new_request = (
+            StudentRequest.objects.filter(
+                recipient=user,
+                status=FeedbackStatus.NEW,
+            )
+            .order_by('-created_at')
+            .select_related('sender')
+            .first()
+        )
+    else:
+        qs = StudentRequest.objects.filter(sender=user).exclude(status=FeedbackStatus.NEW)
+        notif_status_updates = qs.count()
+        last_student_update_request = (
+            qs.order_by('-status_changed_at', '-created_at')
+            .select_related('recipient')
+            .first()
+        )
+
+    return {
+        'notif_new_requests': notif_new_requests,
+        'notif_status_updates': notif_status_updates,
+        'last_curator_new_request': last_curator_new_request,
+        'last_student_update_request': last_student_update_request,
+    }
+
+
 def breadcrumbs(request):
     """
     Добавляет в контекст список хлебных крошек для текущей страницы.

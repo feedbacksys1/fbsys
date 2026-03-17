@@ -35,11 +35,52 @@
             </nav>
             <a href="{% url 'landing' %}" class="logo">Система обслуживания заявок</a>
             <div class="header-nav header-nav-right">
+                {% if user.is_authenticated %}
+                <div class="header-bell">
+                    <button type="button" class="btn btn-header header-bell-btn" aria-expanded="false" aria-haspopup="true" id="notify-btn">
+                        <span class="header-notify-icon">🔔</span>
+                        {% if notif_new_requests or notif_status_updates %}
+                        <span class="header-notify-badge">
+                            {% if user_profile and user_profile.role == 'teacher' %}
+                                {{ notif_new_requests }}
+                            {% else %}
+                                {{ notif_status_updates }}
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                    </button>
+                    <div class="header-bell-menu" aria-labelledby="notify-btn">
+                        {% if user_profile and user_profile.role == 'teacher' %}
+                            {% if last_curator_new_request %}
+                            <div class="header-bell-item">
+                                Новая заявка от {{ last_curator_new_request.sender.get_full_name|default:last_curator_new_request.sender.get_username }} — «{{ last_curator_new_request.topic|default:'Без темы' }}»
+                            </div>
+                            {% else %}
+                            <div class="header-bell-item">
+                                Новых заявок от студентов нет.
+                            </div>
+                            {% endif %}
+                            <a href="{% url 'cabinet' %}" class="header-bell-link">Перейти во входящие заявки</a>
+                        {% else %}
+                            {% if last_student_update_request %}
+                            <div class="header-bell-item">
+                                Куратор {{ last_student_update_request.recipient.get_full_name|default:last_student_update_request.recipient.get_username }} изменил вашу заявку «{{ last_student_update_request.topic|default:'Без темы' }}»
+                            </div>
+                            {% else %}
+                            <div class="header-bell-item">
+                                Изменённых заявок пока нет.
+                            </div>
+                            {% endif %}
+                            <a href="{% url 'cabinet' %}" class="header-bell-link">Перейти в личный кабинет</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
                 <div class="header-nav-auth">
                     {% if user.is_authenticated %}
                     <div class="header-dropdown">
                         <button type="button" class="btn btn-header header-dropdown-trigger" aria-expanded="false" aria-haspopup="true" id="user-menu-btn">
-                            {{ user.get_username }}
+                            <span class="header-user-name">{{ user.get_username }}</span>
                         </button>
                         <div class="header-dropdown-menu" aria-labelledby="user-menu-btn">
                             {% if user.is_staff %}
@@ -86,6 +127,18 @@
             });
             document.addEventListener('click', function(e) {
                 if (!dropdown.contains(e.target)) dropdown.classList.remove('is-open');
+            });
+        })();
+        (function() {
+            var bellBtn = document.getElementById('notify-btn');
+            var bell = bellBtn && bellBtn.closest('.header-bell');
+            if (!bell || !bellBtn) return;
+            bellBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                bell.classList.toggle('is-open');
+            });
+            document.addEventListener('click', function(e) {
+                if (!bell.contains(e.target)) bell.classList.remove('is-open');
             });
         })();
         (function() {

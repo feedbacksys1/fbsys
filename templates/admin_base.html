@@ -20,6 +20,13 @@
                 <a href="{% url 'admin_feedback_list' %}" class="admin-sidebar-link {% if request.resolver_match.url_name == 'admin_feedback_list' %}active{% endif %}">Просмотр форм обратной связи</a>
                 <a href="{% url 'admin_users' %}" class="admin-sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">Управление пользователями</a>
             </nav>
+            <div class="admin-sidebar-separator"></div>
+            <div class="admin-sidebar-section">
+                <a href="{% url 'admin_statistics_export' %}" class="admin-sidebar-link admin-sidebar-link_export">
+                    <span class="admin-sidebar-icon">⬇</span>
+                    <span>Скачать Excel</span>
+                </a>
+            </div>
         </aside>
         <main class="admin-main">
             {% include "includes/breadcrumb.html" %}
